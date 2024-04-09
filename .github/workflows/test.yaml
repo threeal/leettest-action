@@ -58,23 +58,19 @@ jobs:
       matrix:
         os: [windows, ubuntu, macos]
     steps:
-      - name: Checkout
+      - name: Checkout Solutions
         uses: actions/checkout@v4.1.2
         with:
-          path: mkdir-action
+          repository: threeal/leetspace-starter
+
+      - name: Checkout Action
+        uses: actions/checkout@v4.1.2
+        with:
+          path: leettest-action
           sparse-checkout: |
             action.yml
             dist
           sparse-checkout-cone-mode: false
 
-      # Modify the following steps for testing your JavaScript action.
-      # Learn more: https://docs.github.com/en/actions/automating-builds-and-tests
-
-      - name: Create Directory
-        uses: ./mkdir-action
-        with:
-          path: parent/child
-
-      - name: Check Directory
-        shell: bash
-        run: test -d parent/child
+      - name: Test Solutions
+        uses: ./leettest-action
