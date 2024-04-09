@@ -1,11 +1,8 @@
-# Modify the following action metadata according to the specification of your JavaScript action.
-# Learn more: https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
-
-name: Mkdir Action
+name: LeetTest Action
 author: Alfi Maulana
-description: Create a new directory
+description: Compile and test solutions to LeetCode problems
 branding:
-  icon: folder-plus
+  icon: zap
   color: black
 inputs:
   path:
