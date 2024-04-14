@@ -3,7 +3,7 @@ import { globSync } from "glob";
 import { createTestCppSolutionTasks } from "leettest";
 import { Listr, ListrTask } from "listr2";
 
-async function main() {
+try {
   const solutionFiles = globSync("**/solution.cpp").sort();
   const task = new Listr(
     solutionFiles.map(
@@ -31,6 +31,6 @@ async function main() {
   if (task.errors.length > 0) {
     core.setFailed(`failed to test ${task.errors.length} solutions`);
   }
+} catch (err) {
+  core.setFailed(err);
 }
-
-main().catch((err) => core.setFailed(err));
