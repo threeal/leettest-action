@@ -54,3 +54,36 @@ jobs:
 
       - name: Test Solutions
         uses: ./leettest-action
+
+  test-action-failure:
+    name: Test Action Failure
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows, ubuntu, macos]
+    steps:
+      - name: Checkout Solutions
+        uses: actions/checkout@v4.1.2
+        with:
+          repository: threeal/leetspace-starter
+
+      - name: Modify Solutions
+        run: echo "something" >> problems/2235/solution.cpp
+
+      - name: Checkout Action
+        uses: actions/checkout@v4.1.2
+        with:
+          path: leettest-action
+          sparse-checkout: |
+            action.yml
+            dist
+          sparse-checkout-cone-mode: false
+
+      - name: Test Solutions
+        id: test-solutions
+        continue-on-error: true
+        uses: ./leettest-action
+
+      - name: Test Solutions Should Be Failing
+        run: exit ${{ steps.test-solutions.outcome == 'success' && '1' || '0' }}
