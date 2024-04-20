@@ -1,10 +1,13 @@
-import * as core from "@actions/core";
+import { getMultilineInput, setFailed } from "@actions/core";
 import { globSync } from "glob";
 import { createTestCppSolutionTasks } from "leettest";
 import { Listr, ListrTask } from "listr2";
 
 try {
-  const solutionFiles = globSync("**/solution.cpp").sort();
+  const solutionFiles = getMultilineInput("files")
+    .map((pattern) => globSync(pattern))
+    .flat()
+    .sort();
   const task = new Listr(
     solutionFiles.map(
       (solutionFile): ListrTask => ({
@@ -29,8 +32,8 @@ try {
   );
   await task.run();
   if (task.errors.length > 0) {
-    core.setFailed(`failed to test ${task.errors.length} solutions`);
+    setFailed(`failed to test ${task.errors.length} solutions`);
   }
 } catch (err) {
-  core.setFailed(err);
+  setFailed(err);
 }
