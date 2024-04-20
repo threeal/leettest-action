@@ -87,3 +87,35 @@ jobs:
 
       - name: Test Solutions Should Be Failing
         run: exit ${{ steps.test-solutions.outcome == 'success' && '1' || '0' }}
+
+  test-action-with-files-specified:
+    name: Test Action With Files Specified
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows, ubuntu, macos]
+    steps:
+      - name: Checkout Solutions
+        uses: actions/checkout@v4.1.2
+        with:
+          repository: threeal/leetspace-starter
+
+      - name: Modify Solutions
+        run: |
+          cp -r problems/2235 problems/2236
+          echo "something" >> problems/2235/solution.cpp
+
+      - name: Checkout Action
+        uses: actions/checkout@v4.1.2
+        with:
+          path: leettest-action
+          sparse-checkout: |
+            action.yml
+            dist
+          sparse-checkout-cone-mode: false
+
+      - name: Test Solutions
+        uses: ./leettest-action
+        with:
+          files: problems/2236/solution.cpp
