@@ -28,6 +28,19 @@ jobs:
         uses: threeal/leettest-action@v0.2.0
 ```
 
+### Testing Specific Solution Files
+
+By default, this action tests all solution files in the current working directory. To specify the solution files to test, set the `files` input:
+
+```yaml
+- name: Test Solutions
+  uses: threeal/leettest-action@v0.2.0
+  with:
+    files: |
+      problems/2235/solution.cpp
+      other-problems/**/solution.cpp
+```
+
 ## License
 
 This project is licensed under the terms of the [MIT License](./LICENSE).
