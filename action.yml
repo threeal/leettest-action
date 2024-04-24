@@ -4,6 +4,10 @@ description: Compile and test solutions to LeetCode problems
 branding:
   icon: zap
   color: black
+inputs:
+  files:
+    description: A list of pattern for solution files to process
+    default: "**/solution.cpp"
 runs:
   using: node20
   main: dist/index.js

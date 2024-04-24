@@ -24985,7 +24985,10 @@ __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __we
 
 
 try {
-    const solutionFiles = (0,glob__WEBPACK_IMPORTED_MODULE_1__/* .globSync */ .Pv)("**/solution.cpp").sort();
+    const solutionFiles = (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.getMultilineInput)("files")
+        .map((pattern) => (0,glob__WEBPACK_IMPORTED_MODULE_1__/* .globSync */ .Pv)(pattern))
+        .flat()
+        .sort();
     const task = new listr2__WEBPACK_IMPORTED_MODULE_3__/* .Listr */ .A4(solutionFiles.map((solutionFile) => ({
         title: `Testing ${solutionFile}...`,
         task: (_, task) => task.newListr((0,leettest__WEBPACK_IMPORTED_MODULE_2__/* .createTestCppSolutionTasks */ .Q)(solutionFile), {
@@ -25004,11 +25007,11 @@ try {
     });
     await task.run();
     if (task.errors.length > 0) {
-        _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(`failed to test ${task.errors.length} solutions`);
+        (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(`failed to test ${task.errors.length} solutions`);
     }
 }
 catch (err) {
-    _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(err);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(err);
 }
 
 __webpack_async_result__();
