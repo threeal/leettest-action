@@ -24977,8 +24977,8 @@ exports["default"] = _default;
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2340);
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(2711);
-/* harmony import */ var leettest__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(5556);
+/* harmony import */ var glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(9350);
+/* harmony import */ var leettest__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(1740);
 /* harmony import */ var listr2__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(4094);
 
 
@@ -25107,6 +25107,20 @@ module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 /***/ ((module) => {
 
 module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:events");
+
+/***/ }),
+
+/***/ 7561:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:fs");
+
+/***/ }),
+
+/***/ 9411:
+/***/ ((module) => {
+
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:path");
 
 /***/ }),
 
@@ -35185,7 +35199,7 @@ exports.visitAsync = visitAsync;
 
 /***/ }),
 
-/***/ 2711:
+/***/ 9350:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -38423,15 +38437,17 @@ class LRUCache {
     }
 }
 //# sourceMappingURL=index.js.map
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(1017);
-// EXTERNAL MODULE: external "url"
-var external_url_ = __nccwpck_require__(7310);
+// EXTERNAL MODULE: external "node:path"
+var external_node_path_ = __nccwpck_require__(9411);
+;// CONCATENATED MODULE: external "node:url"
+const external_node_url_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:url");
 // EXTERNAL MODULE: external "fs"
 var external_fs_ = __nccwpck_require__(7147);
-var external_fs_namespaceObject = /*#__PURE__*/__nccwpck_require__.t(external_fs_, 2);
-;// CONCATENATED MODULE: external "fs/promises"
-const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
+// EXTERNAL MODULE: external "node:fs"
+var external_node_fs_ = __nccwpck_require__(7561);
+var external_node_fs_namespaceObject = /*#__PURE__*/__nccwpck_require__.t(external_node_fs_, 2);
+;// CONCATENATED MODULE: external "node:fs/promises"
+const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:fs/promises");
 // EXTERNAL MODULE: external "node:events"
 var external_node_events_ = __nccwpck_require__(5673);
 // EXTERNAL MODULE: external "node:stream"
@@ -39457,7 +39473,7 @@ class Minipass extends external_node_events_.EventEmitter {
     }
 }
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/path-scurry-npm-1.10.2-676482c764-10c0.zip/node_modules/path-scurry/dist/esm/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/path-scurry-npm-1.11.1-aaf8c339af-10c0.zip/node_modules/path-scurry/dist/esm/index.js
 
 
 
@@ -39482,8 +39498,8 @@ const defaultFS = {
     },
 };
 // if they just gave us require('fs') then use our default
-const fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === external_fs_namespaceObject
-    ? defaultFS
+const fsFromOption = (fsOption) => !fsOption || fsOption === defaultFS || fsOption === external_node_fs_namespaceObject ?
+    defaultFS
     : {
         ...defaultFS,
         ...fsOption,
@@ -39524,20 +39540,13 @@ const ENOREADLINK = 0b0001_0000_0000;
 const ENOREALPATH = 0b0010_0000_0000;
 const ENOCHILD = ENOTDIR | ENOENT | ENOREALPATH;
 const TYPEMASK = 0b0011_1111_1111;
-const entToType = (s) => s.isFile()
-    ? IFREG
-    : s.isDirectory()
-        ? IFDIR
-        : s.isSymbolicLink()
-            ? IFLNK
-            : s.isCharacterDevice()
-                ? IFCHR
-                : s.isBlockDevice()
-                    ? IFBLK
-                    : s.isSocket()
-                        ? IFSOCK
-                        : s.isFIFO()
-                            ? IFIFO
+const entToType = (s) => s.isFile() ? IFREG
+    : s.isDirectory() ? IFDIR
+        : s.isSymbolicLink() ? IFLNK
+            : s.isCharacterDevice() ? IFCHR
+                : s.isBlockDevice() ? IFBLK
+                    : s.isSocket() ? IFSOCK
+                        : s.isFIFO() ? IFIFO
                             : UNKNOWN;
 // normalize unicode path names
 const normalizeCache = new Map();
@@ -39639,6 +39648,11 @@ class PathBase {
      * @internal
      */
     nocase;
+    /**
+     * boolean indicating that this path is the current working directory
+     * of the PathScurry collection that contains it.
+     */
+    isCWD = false;
     // potential default fs override
     #fs;
     // Stats fields
@@ -39726,13 +39740,19 @@ class PathBase {
     #realpath;
     /**
      * This property is for compatibility with the Dirent class as of
-     * Node v20, where Dirent['path'] refers to the path of the directory
-     * that was passed to readdir.  So, somewhat counterintuitively, this
-     * property refers to the *parent* path, not the path object itself.
-     * For root entries, it's the path to the entry itself.
+     * Node v20, where Dirent['parentPath'] refers to the path of the
+     * directory that was passed to readdir. For root entries, it's the path
+     * to the entry itself.
+     */
+    get parentPath() {
+        return (this.parent || this).fullpath();
+    }
+    /**
+     * Deprecated alias for Dirent['parentPath'] Somewhat counterintuitively,
+     * this property refers to the *parent* path, not the path object itself.
      */
     get path() {
-        return (this.parent || this).fullpath();
+        return this.parentPath;
     }
     /**
      * Do not create new Path objects directly.  They should always be accessed
@@ -39787,8 +39807,8 @@ class PathBase {
         const rootPath = this.getRootString(path);
         const dir = path.substring(rootPath.length);
         const dirParts = dir.split(this.splitSep);
-        const result = rootPath
-            ? this.getRoot(rootPath).#resolveParts(dirParts)
+        const result = rootPath ?
+            this.getRoot(rootPath).#resolveParts(dirParts)
             : this.#resolveParts(dirParts);
         return result;
     }
@@ -39839,9 +39859,7 @@ class PathBase {
         }
         // find the child
         const children = this.children();
-        const name = this.nocase
-            ? normalizeNocase(pathPart)
-            : normalize(pathPart);
+        const name = this.nocase ? normalizeNocase(pathPart) : normalize(pathPart);
         for (const p of children) {
             if (p.#matchName === name) {
                 return p;
@@ -39851,9 +39869,7 @@ class PathBase {
         // actually exist.  If we know the parent isn't a dir, then
         // in fact it CAN'T exist.
         const s = this.parent ? this.sep : '';
-        const fullpath = this.#fullpath
-            ? this.#fullpath + s + pathPart
-            : undefined;
+        const fullpath = this.#fullpath ? this.#fullpath + s + pathPart : undefined;
         const pchild = this.newChild(pathPart, UNKNOWN, {
             ...opts,
             parent: this,
@@ -39872,6 +39888,8 @@ class PathBase {
      * the cwd, then this ends up being equivalent to the fullpath()
      */
     relative() {
+        if (this.isCWD)
+            return '';
         if (this.#relative !== undefined) {
             return this.#relative;
         }
@@ -39892,6 +39910,8 @@ class PathBase {
     relativePosix() {
         if (this.sep === '/')
             return this.relative();
+        if (this.isCWD)
+            return '';
         if (this.#relativePosix !== undefined)
             return this.#relativePosix;
         const name = this.name;
@@ -39957,23 +39977,15 @@ class PathBase {
         return this[`is${type}`]();
     }
     getType() {
-        return this.isUnknown()
-            ? 'Unknown'
-            : this.isDirectory()
-                ? 'Directory'
-                : this.isFile()
-                    ? 'File'
-                    : this.isSymbolicLink()
-                        ? 'SymbolicLink'
-                        : this.isFIFO()
-                            ? 'FIFO'
-                            : this.isCharacterDevice()
-                                ? 'CharacterDevice'
-                                : this.isBlockDevice()
-                                    ? 'BlockDevice'
-                                    : /* c8 ignore start */ this.isSocket()
-                                        ? 'Socket'
-                                        : 'Unknown';
+        return (this.isUnknown() ? 'Unknown'
+            : this.isDirectory() ? 'Directory'
+                : this.isFile() ? 'File'
+                    : this.isSymbolicLink() ? 'SymbolicLink'
+                        : this.isFIFO() ? 'FIFO'
+                            : this.isCharacterDevice() ? 'CharacterDevice'
+                                : this.isBlockDevice() ? 'BlockDevice'
+                                    : /* c8 ignore start */ this.isSocket() ? 'Socket'
+                                        : 'Unknown');
         /* c8 ignore stop */
     }
     /**
@@ -40107,8 +40119,8 @@ class PathBase {
      * directly.
      */
     isNamed(n) {
-        return !this.nocase
-            ? this.#matchName === normalize(n)
+        return !this.nocase ?
+            this.#matchName === normalize(n)
             : this.#matchName === normalizeNocase(n);
     }
     /**
@@ -40164,7 +40176,7 @@ class PathBase {
         /* c8 ignore stop */
         try {
             const read = this.#fs.readlinkSync(this.fullpath());
-            const linkTarget = (this.parent.realpathSync())?.resolve(read);
+            const linkTarget = this.parent.realpathSync()?.resolve(read);
             if (linkTarget) {
                 return (this.#linkTarget = linkTarget);
             }
@@ -40285,9 +40297,7 @@ class PathBase {
     #readdirMaybePromoteChild(e, c) {
         for (let p = c.provisional; p < c.length; p++) {
             const pchild = c[p];
-            const name = this.nocase
-                ? normalizeNocase(e.name)
-                : normalize(e.name);
+            const name = this.nocase ? normalizeNocase(e.name) : normalize(e.name);
             if (name !== pchild.#matchName) {
                 continue;
             }
@@ -40586,6 +40596,8 @@ class PathBase {
     [setAsCwd](oldCwd) {
         if (oldCwd === this)
             return;
+        oldCwd.isCWD = false;
+        this.isCWD = true;
         const changed = new Set([]);
         let rp = [];
         let p = this;
@@ -40639,7 +40651,7 @@ class PathWin32 extends PathBase {
      * @internal
      */
     getRootString(path) {
-        return external_path_.win32.parse(path).root;
+        return external_node_path_.win32.parse(path).root;
     }
     /**
      * @internal
@@ -40759,7 +40771,7 @@ class PathScurryBase {
     constructor(cwd = process.cwd(), pathImpl, sep, { nocase, childrenCacheSize = 16 * 1024, fs = defaultFS, } = {}) {
         this.#fs = fsFromOption(fs);
         if (cwd instanceof URL || cwd.startsWith('file://')) {
-            cwd = (0,external_url_.fileURLToPath)(cwd);
+            cwd = (0,external_node_url_namespaceObject.fileURLToPath)(cwd);
         }
         // resolve and split root, and then add to the store.
         // this is the only time we call path.resolve()
@@ -41347,7 +41359,7 @@ class PathScurryWin32 extends PathScurryBase {
     sep = '\\';
     constructor(cwd = process.cwd(), opts = {}) {
         const { nocase = true } = opts;
-        super(cwd, external_path_.win32, '\\', { ...opts, nocase });
+        super(cwd, external_node_path_.win32, '\\', { ...opts, nocase });
         this.nocase = nocase;
         for (let p = this.cwd; p; p = p.parent) {
             p.nocase = this.nocase;
@@ -41360,7 +41372,7 @@ class PathScurryWin32 extends PathScurryBase {
         // if the path starts with a single separator, it's not a UNC, and we'll
         // just get separator as the root, and driveFromUNC will return \
         // In that case, mount \ on the root from the cwd.
-        return external_path_.win32.parse(dir).root.toUpperCase();
+        return external_node_path_.win32.parse(dir).root.toUpperCase();
     }
     /**
      * @internal
@@ -41389,7 +41401,7 @@ class PathScurryPosix extends PathScurryBase {
     sep = '/';
     constructor(cwd = process.cwd(), opts = {}) {
         const { nocase = false } = opts;
-        super(cwd, external_path_.posix, '/', { ...opts, nocase });
+        super(cwd, external_node_path_.posix, '/', { ...opts, nocase });
         this.nocase = nocase;
     }
     /**
@@ -41437,13 +41449,11 @@ const Path = process.platform === 'win32' ? PathWin32 : PathPosix;
  * {@link PathScurryWin32} on Windows systems, {@link PathScurryDarwin} on
  * Darwin (macOS) systems, {@link PathScurryPosix} on all others.
  */
-const PathScurry = process.platform === 'win32'
-    ? PathScurryWin32
-    : process.platform === 'darwin'
-        ? PathScurryDarwin
+const PathScurry = process.platform === 'win32' ? PathScurryWin32
+    : process.platform === 'darwin' ? PathScurryDarwin
         : PathScurryPosix;
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/pattern.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/pattern.js
 // this is just a very light wrapper around 2 arrays with an offset index
 
 const isPatternList = (pl) => pl.length >= 1;
@@ -42684,7 +42694,7 @@ class esm_Minipass extends external_events_.EventEmitter {
     }
 }
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/ignore.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/ignore.js
 // give it a pattern, and it'll be able to tell you if
 // a given path should be ignored.
 // Ignoring a path ignores its children if the pattern ends in /**
@@ -42795,7 +42805,7 @@ class Ignore {
     }
 }
 //# sourceMappingURL=ignore.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/processor.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/processor.js
 // synchronous utility for filtering entries and calculating subwalks
 
 /**
@@ -43091,7 +43101,7 @@ class Processor {
     }
 }
 //# sourceMappingURL=processor.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/walker.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/walker.js
 /**
  * Single-use utility classes to provide functionality to the {@link Glob}
  * methods.
@@ -43464,7 +43474,7 @@ class GlobStream extends GlobUtil {
     }
 }
 //# sourceMappingURL=walker.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/glob.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/glob.js
 
 
 
@@ -43541,7 +43551,7 @@ class Glob {
             this.cwd = '';
         }
         else if (opts.cwd instanceof URL || opts.cwd.startsWith('file://')) {
-            opts.cwd = (0,external_url_.fileURLToPath)(opts.cwd);
+            opts.cwd = (0,external_node_url_namespaceObject.fileURLToPath)(opts.cwd);
         }
         this.cwd = opts.cwd || '';
         this.root = opts.root;
@@ -43704,7 +43714,7 @@ class Glob {
     }
 }
 //# sourceMappingURL=glob.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/has-magic.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/has-magic.js
 
 /**
  * Return true if the patterns provided contain any magic glob characters,
@@ -43728,7 +43738,7 @@ const hasMagic = (pattern, options = {}) => {
     return false;
 };
 //# sourceMappingURL=has-magic.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.12-f2e90133a0-10c0.zip/node_modules/glob/dist/esm/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.3.15-501e87a16f-10c0.zip/node_modules/glob/dist/esm/index.js
 
 
 
@@ -43788,7 +43798,7 @@ glob.glob = glob;
 
 /***/ }),
 
-/***/ 5556:
+/***/ 1740:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -43799,10 +43809,10 @@ __nccwpck_require__.d(__webpack_exports__, {
 
 // UNUSED EXPORTS: readYamlSchema
 
-;// CONCATENATED MODULE: external "node:path"
-const external_node_path_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:path");
-;// CONCATENATED MODULE: external "node:fs"
-const external_node_fs_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:fs");
+// EXTERNAL MODULE: external "node:path"
+var external_node_path_ = __nccwpck_require__(9411);
+// EXTERNAL MODULE: external "node:fs"
+var external_node_fs_ = __nccwpck_require__(7561);
 // EXTERNAL MODULE: ../../../.yarn/berry/cache/yaml-npm-2.4.1-2717faf9eb-10c0.zip/node_modules/yaml/dist/index.js
 var dist = __nccwpck_require__(6275);
 ;// CONCATENATED MODULE: ../../../.yarn/berry/cache/leettest-npm-0.2.0-9df2540815-10c0.zip/node_modules/leettest/dist/test/schema.js
@@ -43815,7 +43825,7 @@ var dist = __nccwpck_require__(6275);
  * @returns The parsed test schema.
  */
 function readYamlSchema(schemaFile) {
-    const data = (0,external_node_fs_namespaceObject.readFileSync)(schemaFile, "utf-8");
+    const data = (0,external_node_fs_.readFileSync)(schemaFile, "utf-8");
     return dist.parse(data);
 }
 
@@ -43955,9 +43965,9 @@ function generateCppTestCaseCode(schema) {
  */
 function generateCppTest(schema, solutionFile, outFile) {
     const main = generateCppMainCode(schema);
-    (0,external_node_fs_namespaceObject.mkdirSync)(external_node_path_namespaceObject.dirname(outFile), { recursive: true });
-    (0,external_node_fs_namespaceObject.writeFileSync)(outFile, [
-        `#include "${external_node_path_namespaceObject.relative(external_node_path_namespaceObject.dirname(outFile), solutionFile)}"`,
+    (0,external_node_fs_.mkdirSync)(external_node_path_.dirname(outFile), { recursive: true });
+    (0,external_node_fs_.writeFileSync)(outFile, [
+        `#include "${external_node_path_.relative(external_node_path_.dirname(outFile), solutionFile)}"`,
         ``,
         [...main.headers]
             .sort()
@@ -43983,7 +43993,7 @@ const external_node_child_process_namespaceObject = __WEBPACK_EXTERNAL_createReq
  * @param outFile - The path of the compiled executable output.
  */
 function compileCppTest(testFile, outFile) {
-    (0,external_node_fs_namespaceObject.mkdirSync)(external_node_path_namespaceObject.dirname(outFile), { recursive: true });
+    (0,external_node_fs_.mkdirSync)(external_node_path_.dirname(outFile), { recursive: true });
     (0,external_node_child_process_namespaceObject.execSync)(`clang++ --std=c++20 -O2 ${testFile} -o ${outFile}`, {
         stdio: "pipe",
     });
@@ -44017,9 +44027,9 @@ function runCppTest(testExec) {
  * @returns A list of Listr tasks.
  */
 function createTestCppSolutionTasks(solutionFile) {
-    const schemaFile = external_node_path_namespaceObject.join(external_node_path_namespaceObject.dirname(solutionFile), "test.yaml");
-    const testFile = external_node_path_namespaceObject.join("build", external_node_path_namespaceObject.dirname(solutionFile), "test.cpp");
-    const testExec = external_node_path_namespaceObject.join(external_node_path_namespaceObject.dirname(testFile), "test");
+    const schemaFile = external_node_path_.join(external_node_path_.dirname(solutionFile), "test.yaml");
+    const testFile = external_node_path_.join("build", external_node_path_.dirname(solutionFile), "test.cpp");
+    const testExec = external_node_path_.join(external_node_path_.dirname(testFile), "test");
     return [
         {
             title: `Loading ${schemaFile}...`,
