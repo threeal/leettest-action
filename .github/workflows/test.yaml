@@ -14,12 +14,12 @@ jobs:
         os: [windows, ubuntu, macos]
     steps:
       - name: Checkout Solutions
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           repository: threeal/leetspace-starter
 
       - name: Checkout Action
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           path: leettest-action
           sparse-checkout: |
@@ -39,7 +39,7 @@ jobs:
         os: [windows, ubuntu, macos]
     steps:
       - name: Checkout Solutions
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           repository: threeal/leetspace-starter
 
@@ -47,7 +47,7 @@ jobs:
         run: echo "something" >> problems/2235/solution.cpp
 
       - name: Checkout Action
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           path: leettest-action
           sparse-checkout: |
@@ -72,7 +72,7 @@ jobs:
         os: [windows, ubuntu, macos]
     steps:
       - name: Checkout Solutions
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           repository: threeal/leetspace-starter
 
@@ -82,7 +82,7 @@ jobs:
           echo "something" >> problems/2235/solution.cpp
 
       - name: Checkout Action
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v4.1.7
         with:
           path: leettest-action
           sparse-checkout: |
