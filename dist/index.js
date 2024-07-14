@@ -25648,7 +25648,7 @@ exports["default"] = _default;
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2340);
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(6567);
+/* harmony import */ var glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(7868);
 /* harmony import */ var leettest__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(1740);
 /* harmony import */ var listr2__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(4094);
 
@@ -35870,7 +35870,7 @@ exports.visitAsync = visitAsync;
 
 /***/ }),
 
-/***/ 6567:
+/***/ 7868:
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
 
 
@@ -35883,7 +35883,7 @@ __nccwpck_require__.d(__webpack_exports__, {
 
 // EXTERNAL MODULE: ../../../.yarn/berry/cache/brace-expansion-npm-2.0.1-17aa2616f9-10c0.zip/node_modules/brace-expansion/index.js
 var brace_expansion = __nccwpck_require__(1215);
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-9.0.4-7be5a33efc-10c0.zip/node_modules/minimatch/dist/esm/assert-valid-pattern.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-10.0.1-eabcc0d3a0-10c0.zip/node_modules/minimatch/dist/esm/assert-valid-pattern.js
 const MAX_PATTERN_LENGTH = 1024 * 64;
 const assertValidPattern = (pattern) => {
     if (typeof pattern !== 'string') {
@@ -35894,7 +35894,7 @@ const assertValidPattern = (pattern) => {
     }
 };
 //# sourceMappingURL=assert-valid-pattern.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-9.0.4-7be5a33efc-10c0.zip/node_modules/minimatch/dist/esm/brace-expressions.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-10.0.1-eabcc0d3a0-10c0.zip/node_modules/minimatch/dist/esm/brace-expressions.js
 // translate the various posix character classes into unicode properties
 // this works across all unicode locales
 // { <posix class>: [<translation>, /u flag required, negated]
@@ -36043,7 +36043,7 @@ const parseClass = (glob, position) => {
     return [comb, uflag, endPos - pos, true];
 };
 //# sourceMappingURL=brace-expressions.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-9.0.4-7be5a33efc-10c0.zip/node_modules/minimatch/dist/esm/unescape.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-10.0.1-eabcc0d3a0-10c0.zip/node_modules/minimatch/dist/esm/unescape.js
 /**
  * Un-escape a string that has been escaped with {@link escape}.
  *
@@ -36064,7 +36064,7 @@ const unescape_unescape = (s, { windowsPathsNoEscape = false, } = {}) => {
         : s.replace(/((?!\\).|^)\[([^\/\\])\]/g, '$1$2').replace(/\\([^\/])/g, '$1');
 };
 //# sourceMappingURL=unescape.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-9.0.4-7be5a33efc-10c0.zip/node_modules/minimatch/dist/esm/ast.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-10.0.1-eabcc0d3a0-10c0.zip/node_modules/minimatch/dist/esm/ast.js
 // parse a single path portion
 
 
@@ -36653,7 +36653,7 @@ class AST {
     }
 }
 //# sourceMappingURL=ast.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-9.0.4-7be5a33efc-10c0.zip/node_modules/minimatch/dist/esm/escape.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-10.0.1-eabcc0d3a0-10c0.zip/node_modules/minimatch/dist/esm/escape.js
 /**
  * Escape all magic characters in a glob pattern.
  *
@@ -36672,7 +36672,7 @@ const escape_escape = (s, { windowsPathsNoEscape = false, } = {}) => {
         : s.replace(/[?*()[\]\\]/g, '\\$&');
 };
 //# sourceMappingURL=escape.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-9.0.4-7be5a33efc-10c0.zip/node_modules/minimatch/dist/esm/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minimatch-npm-10.0.1-eabcc0d3a0-10c0.zip/node_modules/minimatch/dist/esm/index.js
 
 
 
@@ -37194,10 +37194,11 @@ class Minimatch {
         for (let i = 0; i < globParts.length - 1; i++) {
             for (let j = i + 1; j < globParts.length; j++) {
                 const matched = this.partsMatch(globParts[i], globParts[j], !this.preserveMultipleSlashes);
-                if (!matched)
-                    continue;
-                globParts[i] = matched;
-                globParts[j] = [];
+                if (matched) {
+                    globParts[i] = [];
+                    globParts[j] = matched;
+                    break;
+                }
             }
         }
         return globParts.filter(gs => gs.length);
@@ -37675,7 +37676,7 @@ minimatch.unescape = unescape_unescape;
 //# sourceMappingURL=index.js.map
 ;// CONCATENATED MODULE: external "node:url"
 const external_node_url_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:url");
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/lru-cache-npm-10.2.0-b9f6b44740-10c0.zip/node_modules/lru-cache/dist/esm/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/lru-cache-npm-11.0.0-92d560d9d6-10c0.zip/node_modules/lru-cache/dist/esm/index.js
 /**
  * @module LRUCache
  */
@@ -37805,21 +37806,26 @@ class Stack {
 /**
  * Default export, the thing you're using this module to get.
  *
- * All properties from the options object (with the exception of
- * {@link OptionsBase.max} and {@link OptionsBase.maxSize}) are added as
- * normal public members. (`max` and `maxBase` are read-only getters.)
- * Changing any of these will alter the defaults for subsequent method calls,
- * but is otherwise safe.
+ * The `K` and `V` types define the key and value types, respectively. The
+ * optional `FC` type defines the type of the `context` object passed to
+ * `cache.fetch()` and `cache.memo()`.
+ *
+ * Keys and values **must not** be `null` or `undefined`.
+ *
+ * All properties from the options object (with the exception of `max`,
+ * `maxSize`, `fetchMethod`, `memoMethod`, `dispose` and `disposeAfter`) are
+ * added as normal public members. (The listed options are read-only getters.)
+ *
+ * Changing any of these will alter the defaults for subsequent method calls.
  */
 class LRUCache {
-    // properties coming in from the options of these, only max and maxSize
-    // really *need* to be protected. The rest can be modified, as they just
-    // set defaults for various methods.
+    // options that cannot be changed without disaster
     #max;
     #maxSize;
     #dispose;
     #disposeAfter;
     #fetchMethod;
+    #memoMethod;
     /**
      * {@link LRUCache.OptionsBase.ttl}
      */
@@ -37965,6 +37971,9 @@ class LRUCache {
     get fetchMethod() {
         return this.#fetchMethod;
     }
+    get memoMethod() {
+        return this.#memoMethod;
+    }
     /**
      * {@link LRUCache.OptionsBase.dispose} (read-only)
      */
@@ -37978,7 +37987,7 @@ class LRUCache {
         return this.#disposeAfter;
     }
     constructor(options) {
-        const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, } = options;
+        const { max = 0, ttl, ttlResolution = 1, ttlAutopurge, updateAgeOnGet, updateAgeOnHas, allowStale, dispose, disposeAfter, noDisposeOnSet, noUpdateTTL, maxSize = 0, maxEntrySize = 0, sizeCalculation, fetchMethod, memoMethod, noDeleteOnFetchRejection, noDeleteOnStaleGet, allowStaleOnFetchRejection, allowStaleOnFetchAbort, ignoreFetchAbort, } = options;
         if (max !== 0 && !isPosInt(max)) {
             throw new TypeError('max option must be a nonnegative integer');
         }
@@ -37998,6 +38007,11 @@ class LRUCache {
                 throw new TypeError('sizeCalculation set to non-function');
             }
         }
+        if (memoMethod !== undefined &&
+            typeof memoMethod !== 'function') {
+            throw new TypeError('memoMethod must be a function if defined');
+        }
+        this.#memoMethod = memoMethod;
         if (fetchMethod !== undefined &&
             typeof fetchMethod !== 'function') {
             throw new TypeError('fetchMethod must be a function if specified');
@@ -38076,7 +38090,8 @@ class LRUCache {
         }
     }
     /**
-     * Return the remaining TTL time for a given entry key
+     * Return the number of ms left in the item's TTL. If item is not in cache,
+     * returns `0`. Returns `Infinity` if item is in cache without a defined TTL.
      */
     getRemainingTTL(key) {
         return this.#keyMap.has(key) ? Infinity : 0;
@@ -38092,7 +38107,7 @@ class LRUCache {
             if (ttl !== 0 && this.ttlAutopurge) {
                 const t = setTimeout(() => {
                     if (this.#isStale(index)) {
-                        this.delete(this.#keyList[index]);
+                        this.#delete(this.#keyList[index], 'expire');
                     }
                 }, ttl + 1);
                 // unref() not supported on all platforms
@@ -38349,13 +38364,14 @@ class LRUCache {
         return this.entries();
     }
     /**
-     * A String value that is used in the creation of the default string description of an object.
-     * Called by the built-in method Object.prototype.toString.
+     * A String value that is used in the creation of the default string
+     * description of an object. Called by the built-in method
+     * `Object.prototype.toString`.
      */
     [Symbol.toStringTag] = 'LRUCache';
     /**
      * Find a value for which the supplied fn method returns a truthy value,
-     * similar to Array.find().  fn is called as fn(value, key, cache).
+     * similar to `Array.find()`. fn is called as `fn(value, key, cache)`.
      */
     find(fn, getOptions = {}) {
         for (const i of this.#indexes()) {
@@ -38371,10 +38387,15 @@ class LRUCache {
         }
     }
     /**
-     * Call the supplied function on each item in the cache, in order from
-     * most recently used to least recently used.  fn is called as
-     * fn(value, key, cache).  Does not update age or recenty of use.
-     * Does not iterate over stale values.
+     * Call the supplied function on each item in the cache, in order from most
+     * recently used to least recently used.
+     *
+     * `fn` is called as `fn(value, key, cache)`.
+     *
+     * If `thisp` is provided, function will be called in the `this`-context of
+     * the provided object, or the cache if no `thisp` object is provided.
+     *
+     * Does not update age or recenty of use, or iterate over stale values.
      */
     forEach(fn, thisp = this) {
         for (const i of this.#indexes()) {
@@ -38410,7 +38431,7 @@ class LRUCache {
         let deleted = false;
         for (const i of this.#rindexes({ allowStale: true })) {
             if (this.#isStale(i)) {
-                this.delete(this.#keyList[i]);
+                this.#delete(this.#keyList[i], 'expire');
                 deleted = true;
             }
         }
@@ -38418,9 +38439,15 @@ class LRUCache {
     }
     /**
      * Get the extended info about a given entry, to get its value, size, and
-     * TTL info simultaneously. Like {@link LRUCache#dump}, but just for a
-     * single key. Always returns stale values, if their info is found in the
-     * cache, so be sure to check for expired TTLs if relevant.
+     * TTL info simultaneously. Returns `undefined` if the key is not present.
+     *
+     * Unlike {@link LRUCache#dump}, which is designed to be portable and survive
+     * serialization, the `start` value is always the current timestamp, and the
+     * `ttl` is a calculated remaining time to live (negative if expired).
+     *
+     * Always returns stale values, if their info is found in the cache, so be
+     * sure to check for expirations (ie, a negative {@link LRUCache.Entry#ttl})
+     * if relevant.
      */
     info(key) {
         const i = this.#keyMap.get(key);
@@ -38449,7 +38476,16 @@ class LRUCache {
     }
     /**
      * Return an array of [key, {@link LRUCache.Entry}] tuples which can be
-     * passed to cache.load()
+     * passed to {@link LRLUCache#load}.
+     *
+     * The `start` fields are calculated relative to a portable `Date.now()`
+     * timestamp, even if `performance.now()` is available.
+     *
+     * Stale entries are always included in the `dump`, even if
+     * {@link LRUCache.OptionsBase.allowStale} is false.
+     *
+     * Note: this returns an actual array, not a generator, so it can be more
+     * easily passed around.
      */
     dump() {
         const arr = [];
@@ -38478,8 +38514,12 @@ class LRUCache {
     }
     /**
      * Reset the cache and load in the items in entries in the order listed.
-     * Note that the shape of the resulting cache may be different if the
-     * same options are not used in both caches.
+     *
+     * The shape of the resulting cache may be different if the same options are
+     * not used in both caches.
+     *
+     * The `start` fields are assumed to be calculated relative to a portable
+     * `Date.now()` timestamp, even if `performance.now()` is available.
      */
     load(arr) {
         this.clear();
@@ -38502,6 +38542,30 @@ class LRUCache {
      *
      * Note: if `undefined` is specified as a value, this is an alias for
      * {@link LRUCache#delete}
+     *
+     * Fields on the {@link LRUCache.SetOptions} options param will override
+     * their corresponding values in the constructor options for the scope
+     * of this single `set()` operation.
+     *
+     * If `start` is provided, then that will set the effective start
+     * time for the TTL calculation. Note that this must be a previous
+     * value of `performance.now()` if supported, or a previous value of
+     * `Date.now()` if not.
+     *
+     * Options object may also include `size`, which will prevent
+     * calling the `sizeCalculation` function and just use the specified
+     * number if it is a positive integer, and `noDisposeOnSet` which
+     * will prevent calling a `dispose` function in the case of
+     * overwrites.
+     *
+     * If the `size` (or return value of `sizeCalculation`) for a given
+     * entry is greater than `maxEntrySize`, then the item will not be
+     * added to the cache.
+     *
+     * Will update the recency of the entry.
+     *
+     * If the value is `undefined`, then this is an alias for
+     * `cache.delete(key)`. `undefined` is never stored in the cache.
      */
     set(k, v, setOptions = {}) {
         if (v === undefined) {
@@ -38519,7 +38583,7 @@ class LRUCache {
                 status.maxEntrySizeExceeded = true;
             }
             // have to delete, in case something is there already.
-            this.delete(k);
+            this.#delete(k, 'set');
             return this;
         }
         let index = this.#size === 0 ? undefined : this.#keyMap.get(k);
@@ -38671,6 +38735,14 @@ class LRUCache {
      * Will return false if the item is stale, even though it is technically
      * in the cache.
      *
+     * Check if a key is in the cache, without updating the recency of
+     * use. Age is updated if {@link LRUCache.OptionsBase.updateAgeOnHas} is set
+     * to `true` in either the options or the constructor.
+     *
+     * Will return `false` if the item is stale, even though it is technically in
+     * the cache. The difference can be determined (if it matters) by using a
+     * `status` argument, and inspecting the `has` field.
+     *
      * Will not update item age unless
      * {@link LRUCache.OptionsBase.updateAgeOnHas} is set.
      */
@@ -38762,7 +38834,7 @@ class LRUCache {
                         this.#valList[index] = bf.__staleWhileFetching;
                     }
                     else {
-                        this.delete(k);
+                        this.#delete(k, 'fetch');
                     }
                 }
                 else {
@@ -38791,7 +38863,7 @@ class LRUCache {
                 // the stale value is not removed from the cache when the fetch fails.
                 const del = !noDelete || bf.__staleWhileFetching === undefined;
                 if (del) {
-                    this.delete(k);
+                    this.#delete(k, 'fetch');
                 }
                 else if (!allowStaleAborted) {
                     // still replace the *promise* with the stale value,
@@ -38937,6 +39009,28 @@ class LRUCache {
             return staleVal ? p.__staleWhileFetching : (p.__returned = p);
         }
     }
+    async forceFetch(k, fetchOptions = {}) {
+        const v = await this.fetch(k, fetchOptions);
+        if (v === undefined)
+            throw new Error('fetch() returned undefined');
+        return v;
+    }
+    memo(k, memoOptions = {}) {
+        const memoMethod = this.#memoMethod;
+        if (!memoMethod) {
+            throw new Error('no memoMethod provided to constructor');
+        }
+        const { context, forceRefresh, ...options } = memoOptions;
+        const v = this.get(k, options);
+        if (!forceRefresh && v !== undefined)
+            return v;
+        const vv = memoMethod(k, v, {
+            options,
+            context,
+        });
+        this.set(k, vv, options);
+        return vv;
+    }
     /**
      * Return a value from the cache. Will update the recency of the cache
      * entry found.
@@ -38957,7 +39051,7 @@ class LRUCache {
                 // delete only if not an in-flight background fetch
                 if (!fetching) {
                     if (!noDeleteOnStaleGet) {
-                        this.delete(k);
+                        this.#delete(k, 'expire');
                     }
                     if (status && allowStale)
                         status.returnedStale = true;
@@ -39020,16 +39114,20 @@ class LRUCache {
     }
     /**
      * Deletes a key out of the cache.
+     *
      * Returns true if the key was deleted, false otherwise.
      */
     delete(k) {
+        return this.#delete(k, 'delete');
+    }
+    #delete(k, reason) {
         let deleted = false;
         if (this.#size !== 0) {
             const index = this.#keyMap.get(k);
             if (index !== undefined) {
                 deleted = true;
                 if (this.#size === 1) {
-                    this.clear();
+                    this.#clear(reason);
                 }
                 else {
                     this.#removeItemSize(index);
@@ -39039,10 +39137,10 @@ class LRUCache {
                     }
                     else if (this.#hasDispose || this.#hasDisposeAfter) {
                         if (this.#hasDispose) {
-                            this.#dispose?.(v, k, 'delete');
+                            this.#dispose?.(v, k, reason);
                         }
                         if (this.#hasDisposeAfter) {
-                            this.#disposed?.push([v, k, 'delete']);
+                            this.#disposed?.push([v, k, reason]);
                         }
                     }
                     this.#keyMap.delete(k);
@@ -39078,6 +39176,9 @@ class LRUCache {
      * Clear the cache entirely, throwing away all values.
      */
     clear() {
+        return this.#clear('delete');
+    }
+    #clear(reason) {
         for (const index of this.#rindexes({ allowStale: true })) {
             const v = this.#valList[index];
             if (this.#isBackgroundFetch(v)) {
@@ -39086,10 +39187,10 @@ class LRUCache {
             else {
                 const k = this.#keyList[index];
                 if (this.#hasDispose) {
-                    this.#dispose?.(v, k, 'delete');
+                    this.#dispose?.(v, k, reason);
                 }
                 if (this.#hasDisposeAfter) {
-                    this.#disposed?.push([v, k, 'delete']);
+                    this.#disposed?.push([v, k, reason]);
                 }
             }
         }
@@ -39133,7 +39234,7 @@ var external_node_events_ = __nccwpck_require__(5673);
 var external_node_stream_ = __nccwpck_require__(4492);
 ;// CONCATENATED MODULE: external "node:string_decoder"
 const external_node_string_decoder_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("node:string_decoder");
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minipass-npm-7.0.2-baa42a5a34-10c0.zip/node_modules/minipass/dist/mjs/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minipass-npm-7.1.2-3a5327d36d-10c0.zip/node_modules/minipass/dist/esm/index.js
 const proc = typeof process === 'object' && process
     ? process
     : {
@@ -40152,7 +40253,7 @@ class Minipass extends external_node_events_.EventEmitter {
     }
 }
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/path-scurry-npm-1.11.1-aaf8c339af-10c0.zip/node_modules/path-scurry/dist/esm/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/path-scurry-npm-2.0.0-5a556e8161-10c0.zip/node_modules/path-scurry/dist/esm/index.js
 
 
 
@@ -40429,6 +40530,8 @@ class PathBase {
     /**
      * Deprecated alias for Dirent['parentPath'] Somewhat counterintuitively,
      * this property refers to the *parent* path, not the path object itself.
+     *
+     * @deprecated
      */
     get path() {
         return this.parentPath;
@@ -42132,7 +42235,7 @@ const PathScurry = process.platform === 'win32' ? PathScurryWin32
     : process.platform === 'darwin' ? PathScurryDarwin
         : PathScurryPosix;
 //# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/pattern.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/pattern.js
 // this is just a very light wrapper around 2 arrays with an offset index
 
 const isPatternList = (pl) => pl.length >= 1;
@@ -42348,1026 +42451,7 @@ class Pattern {
     }
 }
 //# sourceMappingURL=pattern.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/minipass-npm-7.1.2-3a5327d36d-10c0.zip/node_modules/minipass/dist/esm/index.js
-const esm_proc = typeof process === 'object' && process
-    ? process
-    : {
-        stdout: null,
-        stderr: null,
-    };
-
-
-
-/**
- * Return true if the argument is a Minipass stream, Node stream, or something
- * else that Minipass can interact with.
- */
-const esm_isStream = (s) => !!s &&
-    typeof s === 'object' &&
-    (s instanceof esm_Minipass ||
-        s instanceof external_node_stream_ ||
-        esm_isReadable(s) ||
-        esm_isWritable(s));
-/**
- * Return true if the argument is a valid {@link Minipass.Readable}
- */
-const esm_isReadable = (s) => !!s &&
-    typeof s === 'object' &&
-    s instanceof external_node_events_.EventEmitter &&
-    typeof s.pipe === 'function' &&
-    // node core Writable streams have a pipe() method, but it throws
-    s.pipe !== external_node_stream_.Writable.prototype.pipe;
-/**
- * Return true if the argument is a valid {@link Minipass.Writable}
- */
-const esm_isWritable = (s) => !!s &&
-    typeof s === 'object' &&
-    s instanceof external_node_events_.EventEmitter &&
-    typeof s.write === 'function' &&
-    typeof s.end === 'function';
-const esm_EOF = Symbol('EOF');
-const esm_MAYBE_EMIT_END = Symbol('maybeEmitEnd');
-const esm_EMITTED_END = Symbol('emittedEnd');
-const esm_EMITTING_END = Symbol('emittingEnd');
-const esm_EMITTED_ERROR = Symbol('emittedError');
-const esm_CLOSED = Symbol('closed');
-const esm_READ = Symbol('read');
-const esm_FLUSH = Symbol('flush');
-const esm_FLUSHCHUNK = Symbol('flushChunk');
-const esm_ENCODING = Symbol('encoding');
-const esm_DECODER = Symbol('decoder');
-const esm_FLOWING = Symbol('flowing');
-const esm_PAUSED = Symbol('paused');
-const esm_RESUME = Symbol('resume');
-const esm_BUFFER = Symbol('buffer');
-const esm_PIPES = Symbol('pipes');
-const esm_BUFFERLENGTH = Symbol('bufferLength');
-const esm_BUFFERPUSH = Symbol('bufferPush');
-const esm_BUFFERSHIFT = Symbol('bufferShift');
-const esm_OBJECTMODE = Symbol('objectMode');
-// internal event when stream is destroyed
-const esm_DESTROYED = Symbol('destroyed');
-// internal event when stream has an error
-const esm_ERROR = Symbol('error');
-const esm_EMITDATA = Symbol('emitData');
-const esm_EMITEND = Symbol('emitEnd');
-const esm_EMITEND2 = Symbol('emitEnd2');
-const esm_ASYNC = Symbol('async');
-const esm_ABORT = Symbol('abort');
-const esm_ABORTED = Symbol('aborted');
-const esm_SIGNAL = Symbol('signal');
-const esm_DATALISTENERS = Symbol('dataListeners');
-const esm_DISCARDED = Symbol('discarded');
-const esm_defer = (fn) => Promise.resolve().then(fn);
-const esm_nodefer = (fn) => fn();
-const esm_isEndish = (ev) => ev === 'end' || ev === 'finish' || ev === 'prefinish';
-const esm_isArrayBufferLike = (b) => b instanceof ArrayBuffer ||
-    (!!b &&
-        typeof b === 'object' &&
-        b.constructor &&
-        b.constructor.name === 'ArrayBuffer' &&
-        b.byteLength >= 0);
-const esm_isArrayBufferView = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
-/**
- * Internal class representing a pipe to a destination stream.
- *
- * @internal
- */
-class esm_Pipe {
-    src;
-    dest;
-    opts;
-    ondrain;
-    constructor(src, dest, opts) {
-        this.src = src;
-        this.dest = dest;
-        this.opts = opts;
-        this.ondrain = () => src[esm_RESUME]();
-        this.dest.on('drain', this.ondrain);
-    }
-    unpipe() {
-        this.dest.removeListener('drain', this.ondrain);
-    }
-    // only here for the prototype
-    /* c8 ignore start */
-    proxyErrors(_er) { }
-    /* c8 ignore stop */
-    end() {
-        this.unpipe();
-        if (this.opts.end)
-            this.dest.end();
-    }
-}
-/**
- * Internal class representing a pipe to a destination stream where
- * errors are proxied.
- *
- * @internal
- */
-class esm_PipeProxyErrors extends esm_Pipe {
-    unpipe() {
-        this.src.removeListener('error', this.proxyErrors);
-        super.unpipe();
-    }
-    constructor(src, dest, opts) {
-        super(src, dest, opts);
-        this.proxyErrors = er => dest.emit('error', er);
-        src.on('error', this.proxyErrors);
-    }
-}
-const esm_isObjectModeOptions = (o) => !!o.objectMode;
-const esm_isEncodingOptions = (o) => !o.objectMode && !!o.encoding && o.encoding !== 'buffer';
-/**
- * Main export, the Minipass class
- *
- * `RType` is the type of data emitted, defaults to Buffer
- *
- * `WType` is the type of data to be written, if RType is buffer or string,
- * then any {@link Minipass.ContiguousData} is allowed.
- *
- * `Events` is the set of event handler signatures that this object
- * will emit, see {@link Minipass.Events}
- */
-class esm_Minipass extends external_node_events_.EventEmitter {
-    [esm_FLOWING] = false;
-    [esm_PAUSED] = false;
-    [esm_PIPES] = [];
-    [esm_BUFFER] = [];
-    [esm_OBJECTMODE];
-    [esm_ENCODING];
-    [esm_ASYNC];
-    [esm_DECODER];
-    [esm_EOF] = false;
-    [esm_EMITTED_END] = false;
-    [esm_EMITTING_END] = false;
-    [esm_CLOSED] = false;
-    [esm_EMITTED_ERROR] = null;
-    [esm_BUFFERLENGTH] = 0;
-    [esm_DESTROYED] = false;
-    [esm_SIGNAL];
-    [esm_ABORTED] = false;
-    [esm_DATALISTENERS] = 0;
-    [esm_DISCARDED] = false;
-    /**
-     * true if the stream can be written
-     */
-    writable = true;
-    /**
-     * true if the stream can be read
-     */
-    readable = true;
-    /**
-     * If `RType` is Buffer, then options do not need to be provided.
-     * Otherwise, an options object must be provided to specify either
-     * {@link Minipass.SharedOptions.objectMode} or
-     * {@link Minipass.SharedOptions.encoding}, as appropriate.
-     */
-    constructor(...args) {
-        const options = (args[0] ||
-            {});
-        super();
-        if (options.objectMode && typeof options.encoding === 'string') {
-            throw new TypeError('Encoding and objectMode may not be used together');
-        }
-        if (esm_isObjectModeOptions(options)) {
-            this[esm_OBJECTMODE] = true;
-            this[esm_ENCODING] = null;
-        }
-        else if (esm_isEncodingOptions(options)) {
-            this[esm_ENCODING] = options.encoding;
-            this[esm_OBJECTMODE] = false;
-        }
-        else {
-            this[esm_OBJECTMODE] = false;
-            this[esm_ENCODING] = null;
-        }
-        this[esm_ASYNC] = !!options.async;
-        this[esm_DECODER] = this[esm_ENCODING]
-            ? new external_node_string_decoder_namespaceObject.StringDecoder(this[esm_ENCODING])
-            : null;
-        //@ts-ignore - private option for debugging and testing
-        if (options && options.debugExposeBuffer === true) {
-            Object.defineProperty(this, 'buffer', { get: () => this[esm_BUFFER] });
-        }
-        //@ts-ignore - private option for debugging and testing
-        if (options && options.debugExposePipes === true) {
-            Object.defineProperty(this, 'pipes', { get: () => this[esm_PIPES] });
-        }
-        const { signal } = options;
-        if (signal) {
-            this[esm_SIGNAL] = signal;
-            if (signal.aborted) {
-                this[esm_ABORT]();
-            }
-            else {
-                signal.addEventListener('abort', () => this[esm_ABORT]());
-            }
-        }
-    }
-    /**
-     * The amount of data stored in the buffer waiting to be read.
-     *
-     * For Buffer strings, this will be the total byte length.
-     * For string encoding streams, this will be the string character length,
-     * according to JavaScript's `string.length` logic.
-     * For objectMode streams, this is a count of the items waiting to be
-     * emitted.
-     */
-    get bufferLength() {
-        return this[esm_BUFFERLENGTH];
-    }
-    /**
-     * The `BufferEncoding` currently in use, or `null`
-     */
-    get encoding() {
-        return this[esm_ENCODING];
-    }
-    /**
-     * @deprecated - This is a read only property
-     */
-    set encoding(_enc) {
-        throw new Error('Encoding must be set at instantiation time');
-    }
-    /**
-     * @deprecated - Encoding may only be set at instantiation time
-     */
-    setEncoding(_enc) {
-        throw new Error('Encoding must be set at instantiation time');
-    }
-    /**
-     * True if this is an objectMode stream
-     */
-    get objectMode() {
-        return this[esm_OBJECTMODE];
-    }
-    /**
-     * @deprecated - This is a read-only property
-     */
-    set objectMode(_om) {
-        throw new Error('objectMode must be set at instantiation time');
-    }
-    /**
-     * true if this is an async stream
-     */
-    get ['async']() {
-        return this[esm_ASYNC];
-    }
-    /**
-     * Set to true to make this stream async.
-     *
-     * Once set, it cannot be unset, as this would potentially cause incorrect
-     * behavior.  Ie, a sync stream can be made async, but an async stream
-     * cannot be safely made sync.
-     */
-    set ['async'](a) {
-        this[esm_ASYNC] = this[esm_ASYNC] || !!a;
-    }
-    // drop everything and get out of the flow completely
-    [esm_ABORT]() {
-        this[esm_ABORTED] = true;
-        this.emit('abort', this[esm_SIGNAL]?.reason);
-        this.destroy(this[esm_SIGNAL]?.reason);
-    }
-    /**
-     * True if the stream has been aborted.
-     */
-    get aborted() {
-        return this[esm_ABORTED];
-    }
-    /**
-     * No-op setter. Stream aborted status is set via the AbortSignal provided
-     * in the constructor options.
-     */
-    set aborted(_) { }
-    write(chunk, encoding, cb) {
-        if (this[esm_ABORTED])
-            return false;
-        if (this[esm_EOF])
-            throw new Error('write after end');
-        if (this[esm_DESTROYED]) {
-            this.emit('error', Object.assign(new Error('Cannot call write after a stream was destroyed'), { code: 'ERR_STREAM_DESTROYED' }));
-            return true;
-        }
-        if (typeof encoding === 'function') {
-            cb = encoding;
-            encoding = 'utf8';
-        }
-        if (!encoding)
-            encoding = 'utf8';
-        const fn = this[esm_ASYNC] ? esm_defer : esm_nodefer;
-        // convert array buffers and typed array views into buffers
-        // at some point in the future, we may want to do the opposite!
-        // leave strings and buffers as-is
-        // anything is only allowed if in object mode, so throw
-        if (!this[esm_OBJECTMODE] && !Buffer.isBuffer(chunk)) {
-            if (esm_isArrayBufferView(chunk)) {
-                //@ts-ignore - sinful unsafe type changing
-                chunk = Buffer.from(chunk.buffer, chunk.byteOffset, chunk.byteLength);
-            }
-            else if (esm_isArrayBufferLike(chunk)) {
-                //@ts-ignore - sinful unsafe type changing
-                chunk = Buffer.from(chunk);
-            }
-            else if (typeof chunk !== 'string') {
-                throw new Error('Non-contiguous data written to non-objectMode stream');
-            }
-        }
-        // handle object mode up front, since it's simpler
-        // this yields better performance, fewer checks later.
-        if (this[esm_OBJECTMODE]) {
-            // maybe impossible?
-            /* c8 ignore start */
-            if (this[esm_FLOWING] && this[esm_BUFFERLENGTH] !== 0)
-                this[esm_FLUSH](true);
-            /* c8 ignore stop */
-            if (this[esm_FLOWING])
-                this.emit('data', chunk);
-            else
-                this[esm_BUFFERPUSH](chunk);
-            if (this[esm_BUFFERLENGTH] !== 0)
-                this.emit('readable');
-            if (cb)
-                fn(cb);
-            return this[esm_FLOWING];
-        }
-        // at this point the chunk is a buffer or string
-        // don't buffer it up or send it to the decoder
-        if (!chunk.length) {
-            if (this[esm_BUFFERLENGTH] !== 0)
-                this.emit('readable');
-            if (cb)
-                fn(cb);
-            return this[esm_FLOWING];
-        }
-        // fast-path writing strings of same encoding to a stream with
-        // an empty buffer, skipping the buffer/decoder dance
-        if (typeof chunk === 'string' &&
-            // unless it is a string already ready for us to use
-            !(encoding === this[esm_ENCODING] && !this[esm_DECODER]?.lastNeed)) {
-            //@ts-ignore - sinful unsafe type change
-            chunk = Buffer.from(chunk, encoding);
-        }
-        if (Buffer.isBuffer(chunk) && this[esm_ENCODING]) {
-            //@ts-ignore - sinful unsafe type change
-            chunk = this[esm_DECODER].write(chunk);
-        }
-        // Note: flushing CAN potentially switch us into not-flowing mode
-        if (this[esm_FLOWING] && this[esm_BUFFERLENGTH] !== 0)
-            this[esm_FLUSH](true);
-        if (this[esm_FLOWING])
-            this.emit('data', chunk);
-        else
-            this[esm_BUFFERPUSH](chunk);
-        if (this[esm_BUFFERLENGTH] !== 0)
-            this.emit('readable');
-        if (cb)
-            fn(cb);
-        return this[esm_FLOWING];
-    }
-    /**
-     * Low-level explicit read method.
-     *
-     * In objectMode, the argument is ignored, and one item is returned if
-     * available.
-     *
-     * `n` is the number of bytes (or in the case of encoding streams,
-     * characters) to consume. If `n` is not provided, then the entire buffer
-     * is returned, or `null` is returned if no data is available.
-     *
-     * If `n` is greater that the amount of data in the internal buffer,
-     * then `null` is returned.
-     */
-    read(n) {
-        if (this[esm_DESTROYED])
-            return null;
-        this[esm_DISCARDED] = false;
-        if (this[esm_BUFFERLENGTH] === 0 ||
-            n === 0 ||
-            (n && n > this[esm_BUFFERLENGTH])) {
-            this[esm_MAYBE_EMIT_END]();
-            return null;
-        }
-        if (this[esm_OBJECTMODE])
-            n = null;
-        if (this[esm_BUFFER].length > 1 && !this[esm_OBJECTMODE]) {
-            // not object mode, so if we have an encoding, then RType is string
-            // otherwise, must be Buffer
-            this[esm_BUFFER] = [
-                (this[esm_ENCODING]
-                    ? this[esm_BUFFER].join('')
-                    : Buffer.concat(this[esm_BUFFER], this[esm_BUFFERLENGTH])),
-            ];
-        }
-        const ret = this[esm_READ](n || null, this[esm_BUFFER][0]);
-        this[esm_MAYBE_EMIT_END]();
-        return ret;
-    }
-    [esm_READ](n, chunk) {
-        if (this[esm_OBJECTMODE])
-            this[esm_BUFFERSHIFT]();
-        else {
-            const c = chunk;
-            if (n === c.length || n === null)
-                this[esm_BUFFERSHIFT]();
-            else if (typeof c === 'string') {
-                this[esm_BUFFER][0] = c.slice(n);
-                chunk = c.slice(0, n);
-                this[esm_BUFFERLENGTH] -= n;
-            }
-            else {
-                this[esm_BUFFER][0] = c.subarray(n);
-                chunk = c.subarray(0, n);
-                this[esm_BUFFERLENGTH] -= n;
-            }
-        }
-        this.emit('data', chunk);
-        if (!this[esm_BUFFER].length && !this[esm_EOF])
-            this.emit('drain');
-        return chunk;
-    }
-    end(chunk, encoding, cb) {
-        if (typeof chunk === 'function') {
-            cb = chunk;
-            chunk = undefined;
-        }
-        if (typeof encoding === 'function') {
-            cb = encoding;
-            encoding = 'utf8';
-        }
-        if (chunk !== undefined)
-            this.write(chunk, encoding);
-        if (cb)
-            this.once('end', cb);
-        this[esm_EOF] = true;
-        this.writable = false;
-        // if we haven't written anything, then go ahead and emit,
-        // even if we're not reading.
-        // we'll re-emit if a new 'end' listener is added anyway.
-        // This makes MP more suitable to write-only use cases.
-        if (this[esm_FLOWING] || !this[esm_PAUSED])
-            this[esm_MAYBE_EMIT_END]();
-        return this;
-    }
-    // don't let the internal resume be overwritten
-    [esm_RESUME]() {
-        if (this[esm_DESTROYED])
-            return;
-        if (!this[esm_DATALISTENERS] && !this[esm_PIPES].length) {
-            this[esm_DISCARDED] = true;
-        }
-        this[esm_PAUSED] = false;
-        this[esm_FLOWING] = true;
-        this.emit('resume');
-        if (this[esm_BUFFER].length)
-            this[esm_FLUSH]();
-        else if (this[esm_EOF])
-            this[esm_MAYBE_EMIT_END]();
-        else
-            this.emit('drain');
-    }
-    /**
-     * Resume the stream if it is currently in a paused state
-     *
-     * If called when there are no pipe destinations or `data` event listeners,
-     * this will place the stream in a "discarded" state, where all data will
-     * be thrown away. The discarded state is removed if a pipe destination or
-     * data handler is added, if pause() is called, or if any synchronous or
-     * asynchronous iteration is started.
-     */
-    resume() {
-        return this[esm_RESUME]();
-    }
-    /**
-     * Pause the stream
-     */
-    pause() {
-        this[esm_FLOWING] = false;
-        this[esm_PAUSED] = true;
-        this[esm_DISCARDED] = false;
-    }
-    /**
-     * true if the stream has been forcibly destroyed
-     */
-    get destroyed() {
-        return this[esm_DESTROYED];
-    }
-    /**
-     * true if the stream is currently in a flowing state, meaning that
-     * any writes will be immediately emitted.
-     */
-    get flowing() {
-        return this[esm_FLOWING];
-    }
-    /**
-     * true if the stream is currently in a paused state
-     */
-    get paused() {
-        return this[esm_PAUSED];
-    }
-    [esm_BUFFERPUSH](chunk) {
-        if (this[esm_OBJECTMODE])
-            this[esm_BUFFERLENGTH] += 1;
-        else
-            this[esm_BUFFERLENGTH] += chunk.length;
-        this[esm_BUFFER].push(chunk);
-    }
-    [esm_BUFFERSHIFT]() {
-        if (this[esm_OBJECTMODE])
-            this[esm_BUFFERLENGTH] -= 1;
-        else
-            this[esm_BUFFERLENGTH] -= this[esm_BUFFER][0].length;
-        return this[esm_BUFFER].shift();
-    }
-    [esm_FLUSH](noDrain = false) {
-        do { } while (this[esm_FLUSHCHUNK](this[esm_BUFFERSHIFT]()) &&
-            this[esm_BUFFER].length);
-        if (!noDrain && !this[esm_BUFFER].length && !this[esm_EOF])
-            this.emit('drain');
-    }
-    [esm_FLUSHCHUNK](chunk) {
-        this.emit('data', chunk);
-        return this[esm_FLOWING];
-    }
-    /**
-     * Pipe all data emitted by this stream into the destination provided.
-     *
-     * Triggers the flow of data.
-     */
-    pipe(dest, opts) {
-        if (this[esm_DESTROYED])
-            return dest;
-        this[esm_DISCARDED] = false;
-        const ended = this[esm_EMITTED_END];
-        opts = opts || {};
-        if (dest === esm_proc.stdout || dest === esm_proc.stderr)
-            opts.end = false;
-        else
-            opts.end = opts.end !== false;
-        opts.proxyErrors = !!opts.proxyErrors;
-        // piping an ended stream ends immediately
-        if (ended) {
-            if (opts.end)
-                dest.end();
-        }
-        else {
-            // "as" here just ignores the WType, which pipes don't care about,
-            // since they're only consuming from us, and writing to the dest
-            this[esm_PIPES].push(!opts.proxyErrors
-                ? new esm_Pipe(this, dest, opts)
-                : new esm_PipeProxyErrors(this, dest, opts));
-            if (this[esm_ASYNC])
-                esm_defer(() => this[esm_RESUME]());
-            else
-                this[esm_RESUME]();
-        }
-        return dest;
-    }
-    /**
-     * Fully unhook a piped destination stream.
-     *
-     * If the destination stream was the only consumer of this stream (ie,
-     * there are no other piped destinations or `'data'` event listeners)
-     * then the flow of data will stop until there is another consumer or
-     * {@link Minipass#resume} is explicitly called.
-     */
-    unpipe(dest) {
-        const p = this[esm_PIPES].find(p => p.dest === dest);
-        if (p) {
-            if (this[esm_PIPES].length === 1) {
-                if (this[esm_FLOWING] && this[esm_DATALISTENERS] === 0) {
-                    this[esm_FLOWING] = false;
-                }
-                this[esm_PIPES] = [];
-            }
-            else
-                this[esm_PIPES].splice(this[esm_PIPES].indexOf(p), 1);
-            p.unpipe();
-        }
-    }
-    /**
-     * Alias for {@link Minipass#on}
-     */
-    addListener(ev, handler) {
-        return this.on(ev, handler);
-    }
-    /**
-     * Mostly identical to `EventEmitter.on`, with the following
-     * behavior differences to prevent data loss and unnecessary hangs:
-     *
-     * - Adding a 'data' event handler will trigger the flow of data
-     *
-     * - Adding a 'readable' event handler when there is data waiting to be read
-     *   will cause 'readable' to be emitted immediately.
-     *
-     * - Adding an 'endish' event handler ('end', 'finish', etc.) which has
-     *   already passed will cause the event to be emitted immediately and all
-     *   handlers removed.
-     *
-     * - Adding an 'error' event handler after an error has been emitted will
-     *   cause the event to be re-emitted immediately with the error previously
-     *   raised.
-     */
-    on(ev, handler) {
-        const ret = super.on(ev, handler);
-        if (ev === 'data') {
-            this[esm_DISCARDED] = false;
-            this[esm_DATALISTENERS]++;
-            if (!this[esm_PIPES].length && !this[esm_FLOWING]) {
-                this[esm_RESUME]();
-            }
-        }
-        else if (ev === 'readable' && this[esm_BUFFERLENGTH] !== 0) {
-            super.emit('readable');
-        }
-        else if (esm_isEndish(ev) && this[esm_EMITTED_END]) {
-            super.emit(ev);
-            this.removeAllListeners(ev);
-        }
-        else if (ev === 'error' && this[esm_EMITTED_ERROR]) {
-            const h = handler;
-            if (this[esm_ASYNC])
-                esm_defer(() => h.call(this, this[esm_EMITTED_ERROR]));
-            else
-                h.call(this, this[esm_EMITTED_ERROR]);
-        }
-        return ret;
-    }
-    /**
-     * Alias for {@link Minipass#off}
-     */
-    removeListener(ev, handler) {
-        return this.off(ev, handler);
-    }
-    /**
-     * Mostly identical to `EventEmitter.off`
-     *
-     * If a 'data' event handler is removed, and it was the last consumer
-     * (ie, there are no pipe destinations or other 'data' event listeners),
-     * then the flow of data will stop until there is another consumer or
-     * {@link Minipass#resume} is explicitly called.
-     */
-    off(ev, handler) {
-        const ret = super.off(ev, handler);
-        // if we previously had listeners, and now we don't, and we don't
-        // have any pipes, then stop the flow, unless it's been explicitly
-        // put in a discarded flowing state via stream.resume().
-        if (ev === 'data') {
-            this[esm_DATALISTENERS] = this.listeners('data').length;
-            if (this[esm_DATALISTENERS] === 0 &&
-                !this[esm_DISCARDED] &&
-                !this[esm_PIPES].length) {
-                this[esm_FLOWING] = false;
-            }
-        }
-        return ret;
-    }
-    /**
-     * Mostly identical to `EventEmitter.removeAllListeners`
-     *
-     * If all 'data' event handlers are removed, and they were the last consumer
-     * (ie, there are no pipe destinations), then the flow of data will stop
-     * until there is another consumer or {@link Minipass#resume} is explicitly
-     * called.
-     */
-    removeAllListeners(ev) {
-        const ret = super.removeAllListeners(ev);
-        if (ev === 'data' || ev === undefined) {
-            this[esm_DATALISTENERS] = 0;
-            if (!this[esm_DISCARDED] && !this[esm_PIPES].length) {
-                this[esm_FLOWING] = false;
-            }
-        }
-        return ret;
-    }
-    /**
-     * true if the 'end' event has been emitted
-     */
-    get emittedEnd() {
-        return this[esm_EMITTED_END];
-    }
-    [esm_MAYBE_EMIT_END]() {
-        if (!this[esm_EMITTING_END] &&
-            !this[esm_EMITTED_END] &&
-            !this[esm_DESTROYED] &&
-            this[esm_BUFFER].length === 0 &&
-            this[esm_EOF]) {
-            this[esm_EMITTING_END] = true;
-            this.emit('end');
-            this.emit('prefinish');
-            this.emit('finish');
-            if (this[esm_CLOSED])
-                this.emit('close');
-            this[esm_EMITTING_END] = false;
-        }
-    }
-    /**
-     * Mostly identical to `EventEmitter.emit`, with the following
-     * behavior differences to prevent data loss and unnecessary hangs:
-     *
-     * If the stream has been destroyed, and the event is something other
-     * than 'close' or 'error', then `false` is returned and no handlers
-     * are called.
-     *
-     * If the event is 'end', and has already been emitted, then the event
-     * is ignored. If the stream is in a paused or non-flowing state, then
-     * the event will be deferred until data flow resumes. If the stream is
-     * async, then handlers will be called on the next tick rather than
-     * immediately.
-     *
-     * If the event is 'close', and 'end' has not yet been emitted, then
-     * the event will be deferred until after 'end' is emitted.
-     *
-     * If the event is 'error', and an AbortSignal was provided for the stream,
-     * and there are no listeners, then the event is ignored, matching the
-     * behavior of node core streams in the presense of an AbortSignal.
-     *
-     * If the event is 'finish' or 'prefinish', then all listeners will be
-     * removed after emitting the event, to prevent double-firing.
-     */
-    emit(ev, ...args) {
-        const data = args[0];
-        // error and close are only events allowed after calling destroy()
-        if (ev !== 'error' &&
-            ev !== 'close' &&
-            ev !== esm_DESTROYED &&
-            this[esm_DESTROYED]) {
-            return false;
-        }
-        else if (ev === 'data') {
-            return !this[esm_OBJECTMODE] && !data
-                ? false
-                : this[esm_ASYNC]
-                    ? (esm_defer(() => this[esm_EMITDATA](data)), true)
-                    : this[esm_EMITDATA](data);
-        }
-        else if (ev === 'end') {
-            return this[esm_EMITEND]();
-        }
-        else if (ev === 'close') {
-            this[esm_CLOSED] = true;
-            // don't emit close before 'end' and 'finish'
-            if (!this[esm_EMITTED_END] && !this[esm_DESTROYED])
-                return false;
-            const ret = super.emit('close');
-            this.removeAllListeners('close');
-            return ret;
-        }
-        else if (ev === 'error') {
-            this[esm_EMITTED_ERROR] = data;
-            super.emit(esm_ERROR, data);
-            const ret = !this[esm_SIGNAL] || this.listeners('error').length
-                ? super.emit('error', data)
-                : false;
-            this[esm_MAYBE_EMIT_END]();
-            return ret;
-        }
-        else if (ev === 'resume') {
-            const ret = super.emit('resume');
-            this[esm_MAYBE_EMIT_END]();
-            return ret;
-        }
-        else if (ev === 'finish' || ev === 'prefinish') {
-            const ret = super.emit(ev);
-            this.removeAllListeners(ev);
-            return ret;
-        }
-        // Some other unknown event
-        const ret = super.emit(ev, ...args);
-        this[esm_MAYBE_EMIT_END]();
-        return ret;
-    }
-    [esm_EMITDATA](data) {
-        for (const p of this[esm_PIPES]) {
-            if (p.dest.write(data) === false)
-                this.pause();
-        }
-        const ret = this[esm_DISCARDED] ? false : super.emit('data', data);
-        this[esm_MAYBE_EMIT_END]();
-        return ret;
-    }
-    [esm_EMITEND]() {
-        if (this[esm_EMITTED_END])
-            return false;
-        this[esm_EMITTED_END] = true;
-        this.readable = false;
-        return this[esm_ASYNC]
-            ? (esm_defer(() => this[esm_EMITEND2]()), true)
-            : this[esm_EMITEND2]();
-    }
-    [esm_EMITEND2]() {
-        if (this[esm_DECODER]) {
-            const data = this[esm_DECODER].end();
-            if (data) {
-                for (const p of this[esm_PIPES]) {
-                    p.dest.write(data);
-                }
-                if (!this[esm_DISCARDED])
-                    super.emit('data', data);
-            }
-        }
-        for (const p of this[esm_PIPES]) {
-            p.end();
-        }
-        const ret = super.emit('end');
-        this.removeAllListeners('end');
-        return ret;
-    }
-    /**
-     * Return a Promise that resolves to an array of all emitted data once
-     * the stream ends.
-     */
-    async collect() {
-        const buf = Object.assign([], {
-            dataLength: 0,
-        });
-        if (!this[esm_OBJECTMODE])
-            buf.dataLength = 0;
-        // set the promise first, in case an error is raised
-        // by triggering the flow here.
-        const p = this.promise();
-        this.on('data', c => {
-            buf.push(c);
-            if (!this[esm_OBJECTMODE])
-                buf.dataLength += c.length;
-        });
-        await p;
-        return buf;
-    }
-    /**
-     * Return a Promise that resolves to the concatenation of all emitted data
-     * once the stream ends.
-     *
-     * Not allowed on objectMode streams.
-     */
-    async concat() {
-        if (this[esm_OBJECTMODE]) {
-            throw new Error('cannot concat in objectMode');
-        }
-        const buf = await this.collect();
-        return (this[esm_ENCODING]
-            ? buf.join('')
-            : Buffer.concat(buf, buf.dataLength));
-    }
-    /**
-     * Return a void Promise that resolves once the stream ends.
-     */
-    async promise() {
-        return new Promise((resolve, reject) => {
-            this.on(esm_DESTROYED, () => reject(new Error('stream destroyed')));
-            this.on('error', er => reject(er));
-            this.on('end', () => resolve());
-        });
-    }
-    /**
-     * Asynchronous `for await of` iteration.
-     *
-     * This will continue emitting all chunks until the stream terminates.
-     */
-    [Symbol.asyncIterator]() {
-        // set this up front, in case the consumer doesn't call next()
-        // right away.
-        this[esm_DISCARDED] = false;
-        let stopped = false;
-        const stop = async () => {
-            this.pause();
-            stopped = true;
-            return { value: undefined, done: true };
-        };
-        const next = () => {
-            if (stopped)
-                return stop();
-            const res = this.read();
-            if (res !== null)
-                return Promise.resolve({ done: false, value: res });
-            if (this[esm_EOF])
-                return stop();
-            let resolve;
-            let reject;
-            const onerr = (er) => {
-                this.off('data', ondata);
-                this.off('end', onend);
-                this.off(esm_DESTROYED, ondestroy);
-                stop();
-                reject(er);
-            };
-            const ondata = (value) => {
-                this.off('error', onerr);
-                this.off('end', onend);
-                this.off(esm_DESTROYED, ondestroy);
-                this.pause();
-                resolve({ value, done: !!this[esm_EOF] });
-            };
-            const onend = () => {
-                this.off('error', onerr);
-                this.off('data', ondata);
-                this.off(esm_DESTROYED, ondestroy);
-                stop();
-                resolve({ done: true, value: undefined });
-            };
-            const ondestroy = () => onerr(new Error('stream destroyed'));
-            return new Promise((res, rej) => {
-                reject = rej;
-                resolve = res;
-                this.once(esm_DESTROYED, ondestroy);
-                this.once('error', onerr);
-                this.once('end', onend);
-                this.once('data', ondata);
-            });
-        };
-        return {
-            next,
-            throw: stop,
-            return: stop,
-            [Symbol.asyncIterator]() {
-                return this;
-            },
-        };
-    }
-    /**
-     * Synchronous `for of` iteration.
-     *
-     * The iteration will terminate when the internal buffer runs out, even
-     * if the stream has not yet terminated.
-     */
-    [Symbol.iterator]() {
-        // set this up front, in case the consumer doesn't call next()
-        // right away.
-        this[esm_DISCARDED] = false;
-        let stopped = false;
-        const stop = () => {
-            this.pause();
-            this.off(esm_ERROR, stop);
-            this.off(esm_DESTROYED, stop);
-            this.off('end', stop);
-            stopped = true;
-            return { done: true, value: undefined };
-        };
-        const next = () => {
-            if (stopped)
-                return stop();
-            const value = this.read();
-            return value === null ? stop() : { done: false, value };
-        };
-        this.once('end', stop);
-        this.once(esm_ERROR, stop);
-        this.once(esm_DESTROYED, stop);
-        return {
-            next,
-            throw: stop,
-            return: stop,
-            [Symbol.iterator]() {
-                return this;
-            },
-        };
-    }
-    /**
-     * Destroy a stream, preventing it from being used for any further purpose.
-     *
-     * If the stream has a `close()` method, then it will be called on
-     * destruction.
-     *
-     * After destruction, any attempt to write data, read data, or emit most
-     * events will be ignored.
-     *
-     * If an error argument is provided, then it will be emitted in an
-     * 'error' event.
-     */
-    destroy(er) {
-        if (this[esm_DESTROYED]) {
-            if (er)
-                this.emit('error', er);
-            else
-                this.emit(esm_DESTROYED);
-            return this;
-        }
-        this[esm_DESTROYED] = true;
-        this[esm_DISCARDED] = true;
-        // throw away all buffered data, it's never coming out
-        this[esm_BUFFER].length = 0;
-        this[esm_BUFFERLENGTH] = 0;
-        const wc = this;
-        if (typeof wc.close === 'function' && !this[esm_CLOSED])
-            wc.close();
-        if (er)
-            this.emit('error', er);
-        // if no error to emit, still reject pending promises
-        else
-            this.emit(esm_DESTROYED);
-        return this;
-    }
-    /**
-     * Alias for {@link isStream}
-     *
-     * Former export location, maintained for backwards compatibility.
-     *
-     * @deprecated
-     */
-    static get isStream() {
-        return esm_isStream;
-    }
-}
-//# sourceMappingURL=index.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/ignore.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/ignore.js
 // give it a pattern, and it'll be able to tell you if
 // a given path should be ignored.
 // Ignoring a path ignores its children if the pattern ends in /**
@@ -43483,7 +42567,7 @@ class Ignore {
     }
 }
 //# sourceMappingURL=ignore.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/processor.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/processor.js
 // synchronous utility for filtering entries and calculating subwalks
 
 /**
@@ -43778,7 +42862,7 @@ class Processor {
     }
 }
 //# sourceMappingURL=processor.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/walker.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/walker.js
 /**
  * Single-use utility classes to provide functionality to the {@link Glob}
  * methods.
@@ -44127,7 +43211,7 @@ class GlobStream extends GlobUtil {
     results;
     constructor(patterns, path, opts) {
         super(patterns, path, opts);
-        this.results = new esm_Minipass({
+        this.results = new Minipass({
             signal: this.signal,
             objectMode: true,
         });
@@ -44160,7 +43244,7 @@ class GlobStream extends GlobUtil {
     }
 }
 //# sourceMappingURL=walker.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/glob.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/glob.js
 
 
 
@@ -44404,7 +43488,7 @@ class Glob {
     }
 }
 //# sourceMappingURL=glob.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/has-magic.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/has-magic.js
 
 /**
  * Return true if the patterns provided contain any magic glob characters,
@@ -44428,7 +43512,7 @@ const hasMagic = (pattern, options = {}) => {
     return false;
 };
 //# sourceMappingURL=has-magic.js.map
-;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-10.4.2-c8431e09a9-10c0.zip/node_modules/glob/dist/esm/index.js
+;// CONCATENATED MODULE: ../../../.yarn/berry/cache/glob-npm-11.0.0-3be4126bf5-10c0.zip/node_modules/glob/dist/esm/index.js
 
 
 
