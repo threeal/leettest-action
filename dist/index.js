@@ -25648,9 +25648,11 @@ exports["default"] = _default;
 __nccwpck_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(2340);
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var catched_error_message__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(144);
 /* harmony import */ var glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(7868);
 /* harmony import */ var leettest__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(1740);
 /* harmony import */ var listr2__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(4094);
+
 
 
 
@@ -25682,7 +25684,7 @@ try {
     }
 }
 catch (err) {
-    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)(err);
+    (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed)((0,catched_error_message__WEBPACK_IMPORTED_MODULE_4__/* .getErrorMessage */ .e)(err));
 }
 
 __webpack_async_result__();
@@ -35866,6 +35868,18 @@ function replaceNode(key, path, node) {
 
 exports.visit = visit;
 exports.visitAsync = visitAsync;
+
+
+/***/ }),
+
+/***/ 144:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+/* harmony export */ __nccwpck_require__.d(__webpack_exports__, {
+/* harmony export */   "e": () => (/* binding */ r)
+/* harmony export */ });
+function r(r){return function(r){if("object"==typeof(e=r)&&null!==e&&"message"in e&&"string"==typeof e.message)return r;var e;try{return new Error(JSON.stringify(r))}catch(e){return new Error(String(r))}}(r).message}
+//# sourceMappingURL=index.esm.js.map
 
 
 /***/ }),

@@ -1,4 +1,5 @@
 import { getMultilineInput, setFailed } from "@actions/core";
+import { getErrorMessage } from "catched-error-message";
 import { globSync } from "glob";
 import { createTestCppSolutionTasks } from "leettest";
 import { Listr, ListrTask } from "listr2";
@@ -35,5 +36,5 @@ try {
     setFailed(`failed to test ${task.errors.length} solutions`);
   }
 } catch (err) {
-  setFailed(err);
+  setFailed(getErrorMessage(err));
 }

@@ -1408,6 +1408,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"catched-error-message@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "catched-error-message@npm:0.0.1"
+  checksum: 10c0/1f10cd4323a73bec7a57b7495730e5dad9995120b04e85b5f654f7b40dc6a36320d95cc55e49cdf78753158e18790ef725e2ec7309ebced3acd6c9a557ac075b
+  languageName: node
+  linkType: hard
+
 "chalk@npm:^2.4.2":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
@@ -3419,6 +3426,7 @@ __metadata:
     "@jest/globals": "npm:^29.7.0"
     "@types/node": "npm:^22.0.0"
     "@vercel/ncc": "npm:^0.38.1"
+    catched-error-message: "npm:^0.0.1"
     eslint: "npm:^9.8.0"
     glob: "npm:^11.0.0"
     leettest: "npm:^0.2.0"
