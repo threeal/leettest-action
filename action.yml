@@ -10,4 +10,4 @@ inputs:
     default: "**/solution.cpp"
 runs:
   using: node20
-  main: dist/index.js
+  main: dist/index.mjs
