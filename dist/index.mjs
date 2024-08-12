@@ -41920,20 +41920,32 @@ function copyBuffer (cur) {
 
 function rfdc (opts) {
   opts = opts || {};
-
   if (opts.circles) return rfdcCircles(opts)
+
+  const constructorHandlers = new Map();
+  constructorHandlers.set(Date, (o) => new Date(o));
+  constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
+  constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
+  if (opts.constructorHandlers) {
+    for (const handler of opts.constructorHandlers) {
+      constructorHandlers.set(handler[0], handler[1]);
+    }
+  }
+
+  let handler = null;
+
   return opts.proto ? cloneProto : clone
 
   function cloneArray (a, fn) {
-    var keys = Object.keys(a);
-    var a2 = new Array(keys.length);
-    for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      var cur = a[k];
+    const keys = Object.keys(a);
+    const a2 = new Array(keys.length);
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      const cur = a[k];
       if (typeof cur !== 'object' || cur === null) {
         a2[k] = cur;
-      } else if (cur instanceof Date) {
-        a2[k] = new Date(cur);
+      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+        a2[k] = handler(cur, fn);
       } else if (ArrayBuffer.isView(cur)) {
         a2[k] = copyBuffer(cur);
       } else {
@@ -41945,22 +41957,18 @@ function rfdc (opts) {
 
   function clone (o) {
     if (typeof o !== 'object' || o === null) return o
-    if (o instanceof Date) return new Date(o)
     if (Array.isArray(o)) return cloneArray(o, clone)
-    if (o instanceof Map) return new Map(cloneArray(Array.from(o), clone))
-    if (o instanceof Set) return new Set(cloneArray(Array.from(o), clone))
-    var o2 = {};
-    for (var k in o) {
+    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+      return handler(o, clone)
+    }
+    const o2 = {};
+    for (const k in o) {
       if (Object.hasOwnProperty.call(o, k) === false) continue
-      var cur = o[k];
+      const cur = o[k];
       if (typeof cur !== 'object' || cur === null) {
         o2[k] = cur;
-      } else if (cur instanceof Date) {
-        o2[k] = new Date(cur);
-      } else if (cur instanceof Map) {
-        o2[k] = new Map(cloneArray(Array.from(cur), clone));
-      } else if (cur instanceof Set) {
-        o2[k] = new Set(cloneArray(Array.from(cur), clone));
+      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+        o2[k] = handler(cur, clone);
       } else if (ArrayBuffer.isView(cur)) {
         o2[k] = copyBuffer(cur);
       } else {
@@ -41972,21 +41980,17 @@ function rfdc (opts) {
 
   function cloneProto (o) {
     if (typeof o !== 'object' || o === null) return o
-    if (o instanceof Date) return new Date(o)
     if (Array.isArray(o)) return cloneArray(o, cloneProto)
-    if (o instanceof Map) return new Map(cloneArray(Array.from(o), cloneProto))
-    if (o instanceof Set) return new Set(cloneArray(Array.from(o), cloneProto))
-    var o2 = {};
-    for (var k in o) {
-      var cur = o[k];
+    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+      return handler(o, cloneProto)
+    }
+    const o2 = {};
+    for (const k in o) {
+      const cur = o[k];
       if (typeof cur !== 'object' || cur === null) {
         o2[k] = cur;
-      } else if (cur instanceof Date) {
-        o2[k] = new Date(cur);
-      } else if (cur instanceof Map) {
-        o2[k] = new Map(cloneArray(Array.from(cur), cloneProto));
-      } else if (cur instanceof Set) {
-        o2[k] = new Set(cloneArray(Array.from(cur), cloneProto));
+      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+        o2[k] = handler(cur, cloneProto);
       } else if (ArrayBuffer.isView(cur)) {
         o2[k] = copyBuffer(cur);
       } else {
@@ -41998,25 +42002,36 @@ function rfdc (opts) {
 }
 
 function rfdcCircles (opts) {
-  var refs = [];
-  var refsNew = [];
+  const refs = [];
+  const refsNew = [];
 
+  const constructorHandlers = new Map();
+  constructorHandlers.set(Date, (o) => new Date(o));
+  constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
+  constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
+  if (opts.constructorHandlers) {
+    for (const handler of opts.constructorHandlers) {
+      constructorHandlers.set(handler[0], handler[1]);
+    }
+  }
+
+  let handler = null;
   return opts.proto ? cloneProto : clone
 
   function cloneArray (a, fn) {
-    var keys = Object.keys(a);
-    var a2 = new Array(keys.length);
-    for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      var cur = a[k];
+    const keys = Object.keys(a);
+    const a2 = new Array(keys.length);
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      const cur = a[k];
       if (typeof cur !== 'object' || cur === null) {
         a2[k] = cur;
-      } else if (cur instanceof Date) {
-        a2[k] = new Date(cur);
+      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+        a2[k] = handler(cur, fn);
       } else if (ArrayBuffer.isView(cur)) {
         a2[k] = copyBuffer(cur);
       } else {
-        var index = refs.indexOf(cur);
+        const index = refs.indexOf(cur);
         if (index !== -1) {
           a2[k] = refsNew[index];
         } else {
@@ -42029,28 +42044,24 @@ function rfdcCircles (opts) {
 
   function clone (o) {
     if (typeof o !== 'object' || o === null) return o
-    if (o instanceof Date) return new Date(o)
     if (Array.isArray(o)) return cloneArray(o, clone)
-    if (o instanceof Map) return new Map(cloneArray(Array.from(o), clone))
-    if (o instanceof Set) return new Set(cloneArray(Array.from(o), clone))
-    var o2 = {};
+    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+      return handler(o, clone)
+    }
+    const o2 = {};
     refs.push(o);
     refsNew.push(o2);
-    for (var k in o) {
+    for (const k in o) {
       if (Object.hasOwnProperty.call(o, k) === false) continue
-      var cur = o[k];
+      const cur = o[k];
       if (typeof cur !== 'object' || cur === null) {
         o2[k] = cur;
-      } else if (cur instanceof Date) {
-        o2[k] = new Date(cur);
-      } else if (cur instanceof Map) {
-        o2[k] = new Map(cloneArray(Array.from(cur), clone));
-      } else if (cur instanceof Set) {
-        o2[k] = new Set(cloneArray(Array.from(cur), clone));
+      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+        o2[k] = handler(cur, clone);
       } else if (ArrayBuffer.isView(cur)) {
         o2[k] = copyBuffer(cur);
       } else {
-        var i = refs.indexOf(cur);
+        const i = refs.indexOf(cur);
         if (i !== -1) {
           o2[k] = refsNew[i];
         } else {
@@ -42065,27 +42076,23 @@ function rfdcCircles (opts) {
 
   function cloneProto (o) {
     if (typeof o !== 'object' || o === null) return o
-    if (o instanceof Date) return new Date(o)
     if (Array.isArray(o)) return cloneArray(o, cloneProto)
-    if (o instanceof Map) return new Map(cloneArray(Array.from(o), cloneProto))
-    if (o instanceof Set) return new Set(cloneArray(Array.from(o), cloneProto))
-    var o2 = {};
+    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+      return handler(o, cloneProto)
+    }
+    const o2 = {};
     refs.push(o);
     refsNew.push(o2);
-    for (var k in o) {
-      var cur = o[k];
+    for (const k in o) {
+      const cur = o[k];
       if (typeof cur !== 'object' || cur === null) {
         o2[k] = cur;
-      } else if (cur instanceof Date) {
-        o2[k] = new Date(cur);
-      } else if (cur instanceof Map) {
-        o2[k] = new Map(cloneArray(Array.from(cur), cloneProto));
-      } else if (cur instanceof Set) {
-        o2[k] = new Set(cloneArray(Array.from(cur), cloneProto));
+      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+        o2[k] = handler(cur, cloneProto);
       } else if (ArrayBuffer.isView(cur)) {
         o2[k] = copyBuffer(cur);
       } else {
-        var i = refs.indexOf(cur);
+        const i = refs.indexOf(cur);
         if (i !== -1) {
           o2[k] = refsNew[i];
         } else {
@@ -42511,6 +42518,8 @@ var ProcessOutput = class {
 };
 function createWritable(cb) {
   const writable = new Writable();
+  writable.rows = Infinity;
+  writable.columns = Infinity;
   writable.write = (chunk) => {
     cb(chunk.toString());
     return true;
@@ -42639,7 +42648,7 @@ __name(parseTimer, "parseTimer");
 var PRESET_TIMER = {
   condition: true,
   field: parseTimer,
-  format: () => color.dim
+  format: /* @__PURE__ */ __name(() => color.dim, "format")
 };
 
 // src/presets/timestamp/parser.ts
@@ -42692,7 +42701,7 @@ var DefaultRenderer = class _DefaultRenderer {
     formatOutput: "wrap",
     pausedTimer: {
       ...PRESET_TIMER,
-      format: () => color.yellowBright
+      format: /* @__PURE__ */ __name(() => color.yellowBright, "format")
     }
   };
   static rendererTaskOptions = {
@@ -42715,7 +42724,7 @@ var DefaultRenderer = class _DefaultRenderer {
     rendererTaskOptions: /* @__PURE__ */ new Map()
   };
   async render() {
-    const { createLogUpdate } = await import('./index-CqP7jwWH.js');
+    const { createLogUpdate } = await import('./index-CgWIFdJI.js');
     const { default: truncate } = await import('./index-BzMk1wJi.js');
     const { default: wrap } = await import('./index-Dp0kadfZ.js');
     this.updater = createLogUpdate(this.logger.process.stdout);
@@ -42890,7 +42899,7 @@ var DefaultRenderer = class _DefaultRenderer {
                 this.logger.suffix(task.message.skip && rendererOptions.showSkipMessage ? task.message.skip : task.title, {
                   field: "SKIPPED" /* SKIPPED */,
                   condition: rendererOptions.suffixSkips,
-                  format: () => color.dim
+                  format: /* @__PURE__ */ __name(() => color.dim, "format")
                 }),
                 this.style(task),
                 level
@@ -42901,7 +42910,7 @@ var DefaultRenderer = class _DefaultRenderer {
               ...this.format(
                 this.logger.suffix(task.title, {
                   field: `${"RETRY" /* RETRY */}:${task.message.retry.count}`,
-                  format: () => color.yellow,
+                  format: /* @__PURE__ */ __name(() => color.yellow, "format"),
                   condition: rendererOptions.suffixRetries
                 }),
                 this.style(task),
@@ -43122,8 +43131,8 @@ var SimpleRenderer = class _SimpleRenderer {
   static rendererOptions = {
     pausedTimer: {
       ...PRESET_TIMER,
-      field: (time) => `${"PAUSED" /* PAUSED */}:${time}`,
-      format: () => color.yellowBright
+      field: /* @__PURE__ */ __name((time) => `${"PAUSED" /* PAUSED */}:${time}`, "field"),
+      format: /* @__PURE__ */ __name(() => color.yellowBright, "format")
     }
   };
   static rendererTaskOptions = {};
@@ -43186,28 +43195,28 @@ var SimpleRenderer = class _SimpleRenderer {
           this.logger.log("FAILED" /* FAILED */, task.title, {
             suffix: {
               field: `${"FAILED" /* FAILED */}: ${message.error}`,
-              format: () => color.red
+              format: /* @__PURE__ */ __name(() => color.red, "format")
             }
           });
         } else if (message.skip) {
           this.logger.log("SKIPPED" /* SKIPPED */, task.title, {
             suffix: {
               field: `${"SKIPPED" /* SKIPPED */}: ${message.skip}`,
-              format: () => color.yellow
+              format: /* @__PURE__ */ __name(() => color.yellow, "format")
             }
           });
         } else if (message.rollback) {
           this.logger.log("ROLLBACK" /* ROLLBACK */, task.title, {
             suffix: {
               field: `${"ROLLBACK" /* ROLLBACK */}: ${message.rollback}`,
-              format: () => color.red
+              format: /* @__PURE__ */ __name(() => color.red, "format")
             }
           });
         } else if (message.retry) {
           this.logger.log("RETRY" /* RETRY */, task.title, {
             suffix: {
               field: `${"RETRY" /* RETRY */}:${message.retry.count}`,
-              format: () => color.red
+              format: /* @__PURE__ */ __name(() => color.red, "format")
             }
           });
         } else if (message.paused) {
@@ -43414,7 +43423,7 @@ var VerboseRenderer = class _VerboseRenderer {
     logTitleChange: false,
     pausedTimer: {
       ...PRESET_TIMER,
-      format: () => color.yellowBright
+      format: /* @__PURE__ */ __name(() => color.yellowBright, "format")
     }
   };
   static rendererTaskOptions;
@@ -44009,9 +44018,9 @@ var Task = class extends ListrTaskEventManager {
       } else if (isObservable(result)) {
         result = new Promise((resolve, reject) => {
           result.subscribe({
-            next: (data) => {
+            next: /* @__PURE__ */ __name((data) => {
               this.output$ = data;
-            },
+            }, "next"),
             error: reject,
             complete: resolve
           });
@@ -44295,5 +44304,3 @@ try {
 catch (err) {
     coreExports.setFailed(r(err));
 }
-
-export { commonjsGlobal as c, getDefaultExportFromCjs as g };
