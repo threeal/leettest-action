@@ -1,11 +1,12 @@
-import { getMultilineInput, setFailed } from "@actions/core";
-import { getErrorMessage } from "catched-error-message";
+import { getInput, logError } from "gha-utils";
 import { globSync } from "glob";
 import { createTestCppSolutionTasks } from "leettest";
 import { Listr, ListrTask } from "listr2";
 
 try {
-  const solutionFiles = getMultilineInput("files")
+  const solutionFiles = getInput("files")
+    .split(/\s+/)
+    .filter((arg) => arg != "")
     .map((pattern) => globSync(pattern))
     .flat()
     .sort();
@@ -33,8 +34,9 @@ try {
   );
   await task.run();
   if (task.errors.length > 0) {
-    setFailed(`failed to test ${task.errors.length} solutions`);
+    throw new Error(`failed to test ${task.errors.length} solutions`);
   }
 } catch (err) {
-  setFailed(getErrorMessage(err));
+  logError(err);
+  process.exit(1);
 }
