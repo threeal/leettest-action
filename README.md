@@ -21,7 +21,7 @@ jobs:
     name: Test Solutions
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Project
         uses: actions/checkout@v4.1.7
 
       - name: Test Solutions
