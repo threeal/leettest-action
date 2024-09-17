@@ -1,10 +1,10 @@
 import * as fs from 'node:fs';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { lstat, readdir as readdir$1, readlink, realpath } from 'node:fs/promises';
 import os from 'node:os';
 import path$1, { win32, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { realpathSync as realpathSync$1, lstatSync, readdir, readdirSync, readlinkSync } from 'fs';
-import { lstat, readdir as readdir$1, readlink, realpath } from 'node:fs/promises';
 import { EventEmitter as EventEmitter$1 } from 'node:events';
 import Stream from 'node:stream';
 import { StringDecoder } from 'node:string_decoder';
@@ -26,6 +26,7 @@ function getInput(name) {
     const value = process.env[`INPUT_${name.toUpperCase()}`] || "";
     return value.trim();
 }
+
 /**
  * Logs an error message in GitHub Actions.
  *
