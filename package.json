@@ -8,7 +8,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "gha-utils": "^0.3.0",
+    "gha-utils": "^0.4.0",
     "glob": "^11.0.0",
     "leettest": "^0.2.0",
     "listr2": "^8.2.4"
