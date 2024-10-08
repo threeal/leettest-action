@@ -18,7 +18,7 @@
     "@jest/globals": "^29.7.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-typescript": "^12.1.0",
     "@types/node": "^22.5.5",
     "eslint": "^9.11.1",
     "prettier": "^3.3.3",
