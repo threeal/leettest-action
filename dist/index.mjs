@@ -41,272 +41,289 @@ function getDefaultExportFromCjs (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
 
-var balancedMatch = balanced$1;
-function balanced$1(a, b, str) {
-  if (a instanceof RegExp) a = maybeMatch(a, str);
-  if (b instanceof RegExp) b = maybeMatch(b, str);
+var balancedMatch;
+var hasRequiredBalancedMatch;
 
-  var r = range(a, b, str);
+function requireBalancedMatch () {
+	if (hasRequiredBalancedMatch) return balancedMatch;
+	hasRequiredBalancedMatch = 1;
+	balancedMatch = balanced;
+	function balanced(a, b, str) {
+	  if (a instanceof RegExp) a = maybeMatch(a, str);
+	  if (b instanceof RegExp) b = maybeMatch(b, str);
 
-  return r && {
-    start: r[0],
-    end: r[1],
-    pre: str.slice(0, r[0]),
-    body: str.slice(r[0] + a.length, r[1]),
-    post: str.slice(r[1] + b.length)
-  };
+	  var r = range(a, b, str);
+
+	  return r && {
+	    start: r[0],
+	    end: r[1],
+	    pre: str.slice(0, r[0]),
+	    body: str.slice(r[0] + a.length, r[1]),
+	    post: str.slice(r[1] + b.length)
+	  };
+	}
+
+	function maybeMatch(reg, str) {
+	  var m = str.match(reg);
+	  return m ? m[0] : null;
+	}
+
+	balanced.range = range;
+	function range(a, b, str) {
+	  var begs, beg, left, right, result;
+	  var ai = str.indexOf(a);
+	  var bi = str.indexOf(b, ai + 1);
+	  var i = ai;
+
+	  if (ai >= 0 && bi > 0) {
+	    if(a===b) {
+	      return [ai, bi];
+	    }
+	    begs = [];
+	    left = str.length;
+
+	    while (i >= 0 && !result) {
+	      if (i == ai) {
+	        begs.push(i);
+	        ai = str.indexOf(a, i + 1);
+	      } else if (begs.length == 1) {
+	        result = [ begs.pop(), bi ];
+	      } else {
+	        beg = begs.pop();
+	        if (beg < left) {
+	          left = beg;
+	          right = bi;
+	        }
+
+	        bi = str.indexOf(b, i + 1);
+	      }
+
+	      i = ai < bi && ai >= 0 ? ai : bi;
+	    }
+
+	    if (begs.length) {
+	      result = [ left, right ];
+	    }
+	  }
+
+	  return result;
+	}
+	return balancedMatch;
 }
 
-function maybeMatch(reg, str) {
-  var m = str.match(reg);
-  return m ? m[0] : null;
+var braceExpansion;
+var hasRequiredBraceExpansion;
+
+function requireBraceExpansion () {
+	if (hasRequiredBraceExpansion) return braceExpansion;
+	hasRequiredBraceExpansion = 1;
+	var balanced = requireBalancedMatch();
+
+	braceExpansion = expandTop;
+
+	var escSlash = '\0SLASH'+Math.random()+'\0';
+	var escOpen = '\0OPEN'+Math.random()+'\0';
+	var escClose = '\0CLOSE'+Math.random()+'\0';
+	var escComma = '\0COMMA'+Math.random()+'\0';
+	var escPeriod = '\0PERIOD'+Math.random()+'\0';
+
+	function numeric(str) {
+	  return parseInt(str, 10) == str
+	    ? parseInt(str, 10)
+	    : str.charCodeAt(0);
+	}
+
+	function escapeBraces(str) {
+	  return str.split('\\\\').join(escSlash)
+	            .split('\\{').join(escOpen)
+	            .split('\\}').join(escClose)
+	            .split('\\,').join(escComma)
+	            .split('\\.').join(escPeriod);
+	}
+
+	function unescapeBraces(str) {
+	  return str.split(escSlash).join('\\')
+	            .split(escOpen).join('{')
+	            .split(escClose).join('}')
+	            .split(escComma).join(',')
+	            .split(escPeriod).join('.');
+	}
+
+
+	// Basically just str.split(","), but handling cases
+	// where we have nested braced sections, which should be
+	// treated as individual members, like {a,{b,c},d}
+	function parseCommaParts(str) {
+	  if (!str)
+	    return [''];
+
+	  var parts = [];
+	  var m = balanced('{', '}', str);
+
+	  if (!m)
+	    return str.split(',');
+
+	  var pre = m.pre;
+	  var body = m.body;
+	  var post = m.post;
+	  var p = pre.split(',');
+
+	  p[p.length-1] += '{' + body + '}';
+	  var postParts = parseCommaParts(post);
+	  if (post.length) {
+	    p[p.length-1] += postParts.shift();
+	    p.push.apply(p, postParts);
+	  }
+
+	  parts.push.apply(parts, p);
+
+	  return parts;
+	}
+
+	function expandTop(str) {
+	  if (!str)
+	    return [];
+
+	  // I don't know why Bash 4.3 does this, but it does.
+	  // Anything starting with {} will have the first two bytes preserved
+	  // but *only* at the top level, so {},a}b will not expand to anything,
+	  // but a{},b}c will be expanded to [a}c,abc].
+	  // One could argue that this is a bug in Bash, but since the goal of
+	  // this module is to match Bash's rules, we escape a leading {}
+	  if (str.substr(0, 2) === '{}') {
+	    str = '\\{\\}' + str.substr(2);
+	  }
+
+	  return expand(escapeBraces(str), true).map(unescapeBraces);
+	}
+
+	function embrace(str) {
+	  return '{' + str + '}';
+	}
+	function isPadded(el) {
+	  return /^-?0\d/.test(el);
+	}
+
+	function lte(i, y) {
+	  return i <= y;
+	}
+	function gte(i, y) {
+	  return i >= y;
+	}
+
+	function expand(str, isTop) {
+	  var expansions = [];
+
+	  var m = balanced('{', '}', str);
+	  if (!m) return [str];
+
+	  // no need to expand pre, since it is guaranteed to be free of brace-sets
+	  var pre = m.pre;
+	  var post = m.post.length
+	    ? expand(m.post, false)
+	    : [''];
+
+	  if (/\$$/.test(m.pre)) {    
+	    for (var k = 0; k < post.length; k++) {
+	      var expansion = pre+ '{' + m.body + '}' + post[k];
+	      expansions.push(expansion);
+	    }
+	  } else {
+	    var isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m.body);
+	    var isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m.body);
+	    var isSequence = isNumericSequence || isAlphaSequence;
+	    var isOptions = m.body.indexOf(',') >= 0;
+	    if (!isSequence && !isOptions) {
+	      // {a},b}
+	      if (m.post.match(/,.*\}/)) {
+	        str = m.pre + '{' + m.body + escClose + m.post;
+	        return expand(str);
+	      }
+	      return [str];
+	    }
+
+	    var n;
+	    if (isSequence) {
+	      n = m.body.split(/\.\./);
+	    } else {
+	      n = parseCommaParts(m.body);
+	      if (n.length === 1) {
+	        // x{{a,b}}y ==> x{a}y x{b}y
+	        n = expand(n[0], false).map(embrace);
+	        if (n.length === 1) {
+	          return post.map(function(p) {
+	            return m.pre + n[0] + p;
+	          });
+	        }
+	      }
+	    }
+
+	    // at this point, n is the parts, and we know it's not a comma set
+	    // with a single entry.
+	    var N;
+
+	    if (isSequence) {
+	      var x = numeric(n[0]);
+	      var y = numeric(n[1]);
+	      var width = Math.max(n[0].length, n[1].length);
+	      var incr = n.length == 3
+	        ? Math.abs(numeric(n[2]))
+	        : 1;
+	      var test = lte;
+	      var reverse = y < x;
+	      if (reverse) {
+	        incr *= -1;
+	        test = gte;
+	      }
+	      var pad = n.some(isPadded);
+
+	      N = [];
+
+	      for (var i = x; test(i, y); i += incr) {
+	        var c;
+	        if (isAlphaSequence) {
+	          c = String.fromCharCode(i);
+	          if (c === '\\')
+	            c = '';
+	        } else {
+	          c = String(i);
+	          if (pad) {
+	            var need = width - c.length;
+	            if (need > 0) {
+	              var z = new Array(need + 1).join('0');
+	              if (i < 0)
+	                c = '-' + z + c.slice(1);
+	              else
+	                c = z + c;
+	            }
+	          }
+	        }
+	        N.push(c);
+	      }
+	    } else {
+	      N = [];
+
+	      for (var j = 0; j < n.length; j++) {
+	        N.push.apply(N, expand(n[j], false));
+	      }
+	    }
+
+	    for (var j = 0; j < N.length; j++) {
+	      for (var k = 0; k < post.length; k++) {
+	        var expansion = pre + N[j] + post[k];
+	        if (!isTop || isSequence || expansion)
+	          expansions.push(expansion);
+	      }
+	    }
+	  }
+
+	  return expansions;
+	}
+	return braceExpansion;
 }
 
-balanced$1.range = range;
-function range(a, b, str) {
-  var begs, beg, left, right, result;
-  var ai = str.indexOf(a);
-  var bi = str.indexOf(b, ai + 1);
-  var i = ai;
-
-  if (ai >= 0 && bi > 0) {
-    if(a===b) {
-      return [ai, bi];
-    }
-    begs = [];
-    left = str.length;
-
-    while (i >= 0 && !result) {
-      if (i == ai) {
-        begs.push(i);
-        ai = str.indexOf(a, i + 1);
-      } else if (begs.length == 1) {
-        result = [ begs.pop(), bi ];
-      } else {
-        beg = begs.pop();
-        if (beg < left) {
-          left = beg;
-          right = bi;
-        }
-
-        bi = str.indexOf(b, i + 1);
-      }
-
-      i = ai < bi && ai >= 0 ? ai : bi;
-    }
-
-    if (begs.length) {
-      result = [ left, right ];
-    }
-  }
-
-  return result;
-}
-
-var balanced = balancedMatch;
-
-var braceExpansion = expandTop;
-
-var escSlash = '\0SLASH'+Math.random()+'\0';
-var escOpen = '\0OPEN'+Math.random()+'\0';
-var escClose = '\0CLOSE'+Math.random()+'\0';
-var escComma = '\0COMMA'+Math.random()+'\0';
-var escPeriod = '\0PERIOD'+Math.random()+'\0';
-
-function numeric(str) {
-  return parseInt(str, 10) == str
-    ? parseInt(str, 10)
-    : str.charCodeAt(0);
-}
-
-function escapeBraces(str) {
-  return str.split('\\\\').join(escSlash)
-            .split('\\{').join(escOpen)
-            .split('\\}').join(escClose)
-            .split('\\,').join(escComma)
-            .split('\\.').join(escPeriod);
-}
-
-function unescapeBraces(str) {
-  return str.split(escSlash).join('\\')
-            .split(escOpen).join('{')
-            .split(escClose).join('}')
-            .split(escComma).join(',')
-            .split(escPeriod).join('.');
-}
-
-
-// Basically just str.split(","), but handling cases
-// where we have nested braced sections, which should be
-// treated as individual members, like {a,{b,c},d}
-function parseCommaParts(str) {
-  if (!str)
-    return [''];
-
-  var parts = [];
-  var m = balanced('{', '}', str);
-
-  if (!m)
-    return str.split(',');
-
-  var pre = m.pre;
-  var body = m.body;
-  var post = m.post;
-  var p = pre.split(',');
-
-  p[p.length-1] += '{' + body + '}';
-  var postParts = parseCommaParts(post);
-  if (post.length) {
-    p[p.length-1] += postParts.shift();
-    p.push.apply(p, postParts);
-  }
-
-  parts.push.apply(parts, p);
-
-  return parts;
-}
-
-function expandTop(str) {
-  if (!str)
-    return [];
-
-  // I don't know why Bash 4.3 does this, but it does.
-  // Anything starting with {} will have the first two bytes preserved
-  // but *only* at the top level, so {},a}b will not expand to anything,
-  // but a{},b}c will be expanded to [a}c,abc].
-  // One could argue that this is a bug in Bash, but since the goal of
-  // this module is to match Bash's rules, we escape a leading {}
-  if (str.substr(0, 2) === '{}') {
-    str = '\\{\\}' + str.substr(2);
-  }
-
-  return expand(escapeBraces(str), true).map(unescapeBraces);
-}
-
-function embrace(str) {
-  return '{' + str + '}';
-}
-function isPadded(el) {
-  return /^-?0\d/.test(el);
-}
-
-function lte(i, y) {
-  return i <= y;
-}
-function gte(i, y) {
-  return i >= y;
-}
-
-function expand(str, isTop) {
-  var expansions = [];
-
-  var m = balanced('{', '}', str);
-  if (!m) return [str];
-
-  // no need to expand pre, since it is guaranteed to be free of brace-sets
-  var pre = m.pre;
-  var post = m.post.length
-    ? expand(m.post, false)
-    : [''];
-
-  if (/\$$/.test(m.pre)) {    
-    for (var k = 0; k < post.length; k++) {
-      var expansion = pre+ '{' + m.body + '}' + post[k];
-      expansions.push(expansion);
-    }
-  } else {
-    var isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m.body);
-    var isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m.body);
-    var isSequence = isNumericSequence || isAlphaSequence;
-    var isOptions = m.body.indexOf(',') >= 0;
-    if (!isSequence && !isOptions) {
-      // {a},b}
-      if (m.post.match(/,.*\}/)) {
-        str = m.pre + '{' + m.body + escClose + m.post;
-        return expand(str);
-      }
-      return [str];
-    }
-
-    var n;
-    if (isSequence) {
-      n = m.body.split(/\.\./);
-    } else {
-      n = parseCommaParts(m.body);
-      if (n.length === 1) {
-        // x{{a,b}}y ==> x{a}y x{b}y
-        n = expand(n[0], false).map(embrace);
-        if (n.length === 1) {
-          return post.map(function(p) {
-            return m.pre + n[0] + p;
-          });
-        }
-      }
-    }
-
-    // at this point, n is the parts, and we know it's not a comma set
-    // with a single entry.
-    var N;
-
-    if (isSequence) {
-      var x = numeric(n[0]);
-      var y = numeric(n[1]);
-      var width = Math.max(n[0].length, n[1].length);
-      var incr = n.length == 3
-        ? Math.abs(numeric(n[2]))
-        : 1;
-      var test = lte;
-      var reverse = y < x;
-      if (reverse) {
-        incr *= -1;
-        test = gte;
-      }
-      var pad = n.some(isPadded);
-
-      N = [];
-
-      for (var i = x; test(i, y); i += incr) {
-        var c;
-        if (isAlphaSequence) {
-          c = String.fromCharCode(i);
-          if (c === '\\')
-            c = '';
-        } else {
-          c = String(i);
-          if (pad) {
-            var need = width - c.length;
-            if (need > 0) {
-              var z = new Array(need + 1).join('0');
-              if (i < 0)
-                c = '-' + z + c.slice(1);
-              else
-                c = z + c;
-            }
-          }
-        }
-        N.push(c);
-      }
-    } else {
-      N = [];
-
-      for (var j = 0; j < n.length; j++) {
-        N.push.apply(N, expand(n[j], false));
-      }
-    }
-
-    for (var j = 0; j < N.length; j++) {
-      for (var k = 0; k < post.length; k++) {
-        var expansion = pre + N[j] + post[k];
-        if (!isTop || isSequence || expansion)
-          expansions.push(expansion);
-      }
-    }
-  }
-
-  return expansions;
-}
-
-var expand$1 = /*@__PURE__*/getDefaultExportFromCjs(braceExpansion);
+var braceExpansionExports = requireBraceExpansion();
+var expand = /*@__PURE__*/getDefaultExportFromCjs(braceExpansionExports);
 
 const MAX_PATTERN_LENGTH = 1024 * 64;
 const assertValidPattern = (pattern) => {
@@ -1235,7 +1252,7 @@ const braceExpand = (pattern, options = {}) => {
         // shortcut. no need to expand.
         return [pattern];
     }
-    return expand$1(pattern);
+    return expand(pattern);
 };
 minimatch.braceExpand = braceExpand;
 // parse a component of the expanded set.
@@ -15437,345 +15454,352 @@ function createTestCppSolutionTasks(solutionFile) {
 
 var eventemitter3 = {exports: {}};
 
-(function (module) {
+var hasRequiredEventemitter3;
 
-	var has = Object.prototype.hasOwnProperty
-	  , prefix = '~';
+function requireEventemitter3 () {
+	if (hasRequiredEventemitter3) return eventemitter3.exports;
+	hasRequiredEventemitter3 = 1;
+	(function (module) {
 
-	/**
-	 * Constructor to create a storage for our `EE` objects.
-	 * An `Events` instance is a plain object whose properties are event names.
-	 *
-	 * @constructor
-	 * @private
-	 */
-	function Events() {}
+		var has = Object.prototype.hasOwnProperty
+		  , prefix = '~';
 
-	//
-	// We try to not inherit from `Object.prototype`. In some engines creating an
-	// instance in this way is faster than calling `Object.create(null)` directly.
-	// If `Object.create(null)` is not supported we prefix the event names with a
-	// character to make sure that the built-in object properties are not
-	// overridden or used as an attack vector.
-	//
-	if (Object.create) {
-	  Events.prototype = Object.create(null);
+		/**
+		 * Constructor to create a storage for our `EE` objects.
+		 * An `Events` instance is a plain object whose properties are event names.
+		 *
+		 * @constructor
+		 * @private
+		 */
+		function Events() {}
 
-	  //
-	  // This hack is needed because the `__proto__` property is still inherited in
-	  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
-	  //
-	  if (!new Events().__proto__) prefix = false;
-	}
+		//
+		// We try to not inherit from `Object.prototype`. In some engines creating an
+		// instance in this way is faster than calling `Object.create(null)` directly.
+		// If `Object.create(null)` is not supported we prefix the event names with a
+		// character to make sure that the built-in object properties are not
+		// overridden or used as an attack vector.
+		//
+		if (Object.create) {
+		  Events.prototype = Object.create(null);
 
-	/**
-	 * Representation of a single event listener.
-	 *
-	 * @param {Function} fn The listener function.
-	 * @param {*} context The context to invoke the listener with.
-	 * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
-	 * @constructor
-	 * @private
-	 */
-	function EE(fn, context, once) {
-	  this.fn = fn;
-	  this.context = context;
-	  this.once = once || false;
-	}
+		  //
+		  // This hack is needed because the `__proto__` property is still inherited in
+		  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+		  //
+		  if (!new Events().__proto__) prefix = false;
+		}
 
-	/**
-	 * Add a listener for a given event.
-	 *
-	 * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
-	 * @param {(String|Symbol)} event The event name.
-	 * @param {Function} fn The listener function.
-	 * @param {*} context The context to invoke the listener with.
-	 * @param {Boolean} once Specify if the listener is a one-time listener.
-	 * @returns {EventEmitter}
-	 * @private
-	 */
-	function addListener(emitter, event, fn, context, once) {
-	  if (typeof fn !== 'function') {
-	    throw new TypeError('The listener must be a function');
-	  }
+		/**
+		 * Representation of a single event listener.
+		 *
+		 * @param {Function} fn The listener function.
+		 * @param {*} context The context to invoke the listener with.
+		 * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+		 * @constructor
+		 * @private
+		 */
+		function EE(fn, context, once) {
+		  this.fn = fn;
+		  this.context = context;
+		  this.once = once || false;
+		}
 
-	  var listener = new EE(fn, context || emitter, once)
-	    , evt = prefix ? prefix + event : event;
+		/**
+		 * Add a listener for a given event.
+		 *
+		 * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+		 * @param {(String|Symbol)} event The event name.
+		 * @param {Function} fn The listener function.
+		 * @param {*} context The context to invoke the listener with.
+		 * @param {Boolean} once Specify if the listener is a one-time listener.
+		 * @returns {EventEmitter}
+		 * @private
+		 */
+		function addListener(emitter, event, fn, context, once) {
+		  if (typeof fn !== 'function') {
+		    throw new TypeError('The listener must be a function');
+		  }
 
-	  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
-	  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
-	  else emitter._events[evt] = [emitter._events[evt], listener];
+		  var listener = new EE(fn, context || emitter, once)
+		    , evt = prefix ? prefix + event : event;
 
-	  return emitter;
-	}
+		  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
+		  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
+		  else emitter._events[evt] = [emitter._events[evt], listener];
 
-	/**
-	 * Clear event by name.
-	 *
-	 * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
-	 * @param {(String|Symbol)} evt The Event name.
-	 * @private
-	 */
-	function clearEvent(emitter, evt) {
-	  if (--emitter._eventsCount === 0) emitter._events = new Events();
-	  else delete emitter._events[evt];
-	}
+		  return emitter;
+		}
 
-	/**
-	 * Minimal `EventEmitter` interface that is molded against the Node.js
-	 * `EventEmitter` interface.
-	 *
-	 * @constructor
-	 * @public
-	 */
-	function EventEmitter() {
-	  this._events = new Events();
-	  this._eventsCount = 0;
-	}
+		/**
+		 * Clear event by name.
+		 *
+		 * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+		 * @param {(String|Symbol)} evt The Event name.
+		 * @private
+		 */
+		function clearEvent(emitter, evt) {
+		  if (--emitter._eventsCount === 0) emitter._events = new Events();
+		  else delete emitter._events[evt];
+		}
 
-	/**
-	 * Return an array listing the events for which the emitter has registered
-	 * listeners.
-	 *
-	 * @returns {Array}
-	 * @public
-	 */
-	EventEmitter.prototype.eventNames = function eventNames() {
-	  var names = []
-	    , events
-	    , name;
+		/**
+		 * Minimal `EventEmitter` interface that is molded against the Node.js
+		 * `EventEmitter` interface.
+		 *
+		 * @constructor
+		 * @public
+		 */
+		function EventEmitter() {
+		  this._events = new Events();
+		  this._eventsCount = 0;
+		}
 
-	  if (this._eventsCount === 0) return names;
+		/**
+		 * Return an array listing the events for which the emitter has registered
+		 * listeners.
+		 *
+		 * @returns {Array}
+		 * @public
+		 */
+		EventEmitter.prototype.eventNames = function eventNames() {
+		  var names = []
+		    , events
+		    , name;
 
-	  for (name in (events = this._events)) {
-	    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
-	  }
+		  if (this._eventsCount === 0) return names;
 
-	  if (Object.getOwnPropertySymbols) {
-	    return names.concat(Object.getOwnPropertySymbols(events));
-	  }
+		  for (name in (events = this._events)) {
+		    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+		  }
 
-	  return names;
-	};
+		  if (Object.getOwnPropertySymbols) {
+		    return names.concat(Object.getOwnPropertySymbols(events));
+		  }
 
-	/**
-	 * Return the listeners registered for a given event.
-	 *
-	 * @param {(String|Symbol)} event The event name.
-	 * @returns {Array} The registered listeners.
-	 * @public
-	 */
-	EventEmitter.prototype.listeners = function listeners(event) {
-	  var evt = prefix ? prefix + event : event
-	    , handlers = this._events[evt];
+		  return names;
+		};
 
-	  if (!handlers) return [];
-	  if (handlers.fn) return [handlers.fn];
+		/**
+		 * Return the listeners registered for a given event.
+		 *
+		 * @param {(String|Symbol)} event The event name.
+		 * @returns {Array} The registered listeners.
+		 * @public
+		 */
+		EventEmitter.prototype.listeners = function listeners(event) {
+		  var evt = prefix ? prefix + event : event
+		    , handlers = this._events[evt];
 
-	  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
-	    ee[i] = handlers[i].fn;
-	  }
+		  if (!handlers) return [];
+		  if (handlers.fn) return [handlers.fn];
 
-	  return ee;
-	};
+		  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+		    ee[i] = handlers[i].fn;
+		  }
 
-	/**
-	 * Return the number of listeners listening to a given event.
-	 *
-	 * @param {(String|Symbol)} event The event name.
-	 * @returns {Number} The number of listeners.
-	 * @public
-	 */
-	EventEmitter.prototype.listenerCount = function listenerCount(event) {
-	  var evt = prefix ? prefix + event : event
-	    , listeners = this._events[evt];
+		  return ee;
+		};
 
-	  if (!listeners) return 0;
-	  if (listeners.fn) return 1;
-	  return listeners.length;
-	};
+		/**
+		 * Return the number of listeners listening to a given event.
+		 *
+		 * @param {(String|Symbol)} event The event name.
+		 * @returns {Number} The number of listeners.
+		 * @public
+		 */
+		EventEmitter.prototype.listenerCount = function listenerCount(event) {
+		  var evt = prefix ? prefix + event : event
+		    , listeners = this._events[evt];
 
-	/**
-	 * Calls each of the listeners registered for a given event.
-	 *
-	 * @param {(String|Symbol)} event The event name.
-	 * @returns {Boolean} `true` if the event had listeners, else `false`.
-	 * @public
-	 */
-	EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-	  var evt = prefix ? prefix + event : event;
+		  if (!listeners) return 0;
+		  if (listeners.fn) return 1;
+		  return listeners.length;
+		};
 
-	  if (!this._events[evt]) return false;
+		/**
+		 * Calls each of the listeners registered for a given event.
+		 *
+		 * @param {(String|Symbol)} event The event name.
+		 * @returns {Boolean} `true` if the event had listeners, else `false`.
+		 * @public
+		 */
+		EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+		  var evt = prefix ? prefix + event : event;
 
-	  var listeners = this._events[evt]
-	    , len = arguments.length
-	    , args
-	    , i;
+		  if (!this._events[evt]) return false;
 
-	  if (listeners.fn) {
-	    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+		  var listeners = this._events[evt]
+		    , len = arguments.length
+		    , args
+		    , i;
 
-	    switch (len) {
-	      case 1: return listeners.fn.call(listeners.context), true;
-	      case 2: return listeners.fn.call(listeners.context, a1), true;
-	      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
-	      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
-	      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-	      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
-	    }
+		  if (listeners.fn) {
+		    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
 
-	    for (i = 1, args = new Array(len -1); i < len; i++) {
-	      args[i - 1] = arguments[i];
-	    }
+		    switch (len) {
+		      case 1: return listeners.fn.call(listeners.context), true;
+		      case 2: return listeners.fn.call(listeners.context, a1), true;
+		      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+		      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+		      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+		      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+		    }
 
-	    listeners.fn.apply(listeners.context, args);
-	  } else {
-	    var length = listeners.length
-	      , j;
+		    for (i = 1, args = new Array(len -1); i < len; i++) {
+		      args[i - 1] = arguments[i];
+		    }
 
-	    for (i = 0; i < length; i++) {
-	      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+		    listeners.fn.apply(listeners.context, args);
+		  } else {
+		    var length = listeners.length
+		      , j;
 
-	      switch (len) {
-	        case 1: listeners[i].fn.call(listeners[i].context); break;
-	        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
-	        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
-	        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
-	        default:
-	          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
-	            args[j - 1] = arguments[j];
-	          }
+		    for (i = 0; i < length; i++) {
+		      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
 
-	          listeners[i].fn.apply(listeners[i].context, args);
-	      }
-	    }
-	  }
+		      switch (len) {
+		        case 1: listeners[i].fn.call(listeners[i].context); break;
+		        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+		        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+		        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+		        default:
+		          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+		            args[j - 1] = arguments[j];
+		          }
 
-	  return true;
-	};
+		          listeners[i].fn.apply(listeners[i].context, args);
+		      }
+		    }
+		  }
 
-	/**
-	 * Add a listener for a given event.
-	 *
-	 * @param {(String|Symbol)} event The event name.
-	 * @param {Function} fn The listener function.
-	 * @param {*} [context=this] The context to invoke the listener with.
-	 * @returns {EventEmitter} `this`.
-	 * @public
-	 */
-	EventEmitter.prototype.on = function on(event, fn, context) {
-	  return addListener(this, event, fn, context, false);
-	};
+		  return true;
+		};
 
-	/**
-	 * Add a one-time listener for a given event.
-	 *
-	 * @param {(String|Symbol)} event The event name.
-	 * @param {Function} fn The listener function.
-	 * @param {*} [context=this] The context to invoke the listener with.
-	 * @returns {EventEmitter} `this`.
-	 * @public
-	 */
-	EventEmitter.prototype.once = function once(event, fn, context) {
-	  return addListener(this, event, fn, context, true);
-	};
+		/**
+		 * Add a listener for a given event.
+		 *
+		 * @param {(String|Symbol)} event The event name.
+		 * @param {Function} fn The listener function.
+		 * @param {*} [context=this] The context to invoke the listener with.
+		 * @returns {EventEmitter} `this`.
+		 * @public
+		 */
+		EventEmitter.prototype.on = function on(event, fn, context) {
+		  return addListener(this, event, fn, context, false);
+		};
 
-	/**
-	 * Remove the listeners of a given event.
-	 *
-	 * @param {(String|Symbol)} event The event name.
-	 * @param {Function} fn Only remove the listeners that match this function.
-	 * @param {*} context Only remove the listeners that have this context.
-	 * @param {Boolean} once Only remove one-time listeners.
-	 * @returns {EventEmitter} `this`.
-	 * @public
-	 */
-	EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-	  var evt = prefix ? prefix + event : event;
+		/**
+		 * Add a one-time listener for a given event.
+		 *
+		 * @param {(String|Symbol)} event The event name.
+		 * @param {Function} fn The listener function.
+		 * @param {*} [context=this] The context to invoke the listener with.
+		 * @returns {EventEmitter} `this`.
+		 * @public
+		 */
+		EventEmitter.prototype.once = function once(event, fn, context) {
+		  return addListener(this, event, fn, context, true);
+		};
 
-	  if (!this._events[evt]) return this;
-	  if (!fn) {
-	    clearEvent(this, evt);
-	    return this;
-	  }
+		/**
+		 * Remove the listeners of a given event.
+		 *
+		 * @param {(String|Symbol)} event The event name.
+		 * @param {Function} fn Only remove the listeners that match this function.
+		 * @param {*} context Only remove the listeners that have this context.
+		 * @param {Boolean} once Only remove one-time listeners.
+		 * @returns {EventEmitter} `this`.
+		 * @public
+		 */
+		EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+		  var evt = prefix ? prefix + event : event;
 
-	  var listeners = this._events[evt];
+		  if (!this._events[evt]) return this;
+		  if (!fn) {
+		    clearEvent(this, evt);
+		    return this;
+		  }
 
-	  if (listeners.fn) {
-	    if (
-	      listeners.fn === fn &&
-	      (!once || listeners.once) &&
-	      (!context || listeners.context === context)
-	    ) {
-	      clearEvent(this, evt);
-	    }
-	  } else {
-	    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
-	      if (
-	        listeners[i].fn !== fn ||
-	        (once && !listeners[i].once) ||
-	        (context && listeners[i].context !== context)
-	      ) {
-	        events.push(listeners[i]);
-	      }
-	    }
+		  var listeners = this._events[evt];
 
-	    //
-	    // Reset the array, or remove it completely if we have no more listeners.
-	    //
-	    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
-	    else clearEvent(this, evt);
-	  }
+		  if (listeners.fn) {
+		    if (
+		      listeners.fn === fn &&
+		      (!once || listeners.once) &&
+		      (!context || listeners.context === context)
+		    ) {
+		      clearEvent(this, evt);
+		    }
+		  } else {
+		    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+		      if (
+		        listeners[i].fn !== fn ||
+		        (once && !listeners[i].once) ||
+		        (context && listeners[i].context !== context)
+		      ) {
+		        events.push(listeners[i]);
+		      }
+		    }
 
-	  return this;
-	};
+		    //
+		    // Reset the array, or remove it completely if we have no more listeners.
+		    //
+		    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
+		    else clearEvent(this, evt);
+		  }
 
-	/**
-	 * Remove all listeners, or those of the specified event.
-	 *
-	 * @param {(String|Symbol)} [event] The event name.
-	 * @returns {EventEmitter} `this`.
-	 * @public
-	 */
-	EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
-	  var evt;
+		  return this;
+		};
 
-	  if (event) {
-	    evt = prefix ? prefix + event : event;
-	    if (this._events[evt]) clearEvent(this, evt);
-	  } else {
-	    this._events = new Events();
-	    this._eventsCount = 0;
-	  }
+		/**
+		 * Remove all listeners, or those of the specified event.
+		 *
+		 * @param {(String|Symbol)} [event] The event name.
+		 * @returns {EventEmitter} `this`.
+		 * @public
+		 */
+		EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+		  var evt;
 
-	  return this;
-	};
+		  if (event) {
+		    evt = prefix ? prefix + event : event;
+		    if (this._events[evt]) clearEvent(this, evt);
+		  } else {
+		    this._events = new Events();
+		    this._eventsCount = 0;
+		  }
 
-	//
-	// Alias methods names because people roll like that.
-	//
-	EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-	EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+		  return this;
+		};
 
-	//
-	// Expose the prefix.
-	//
-	EventEmitter.prefixed = prefix;
+		//
+		// Alias methods names because people roll like that.
+		//
+		EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+		EventEmitter.prototype.addListener = EventEmitter.prototype.on;
 
-	//
-	// Allow `EventEmitter` to be imported as module namespace.
-	//
-	EventEmitter.EventEmitter = EventEmitter;
+		//
+		// Expose the prefix.
+		//
+		EventEmitter.prefixed = prefix;
 
-	//
-	// Expose the module.
-	//
-	{
-	  module.exports = EventEmitter;
-	} 
-} (eventemitter3));
+		//
+		// Allow `EventEmitter` to be imported as module namespace.
+		//
+		EventEmitter.EventEmitter = EventEmitter;
 
-var eventemitter3Exports = eventemitter3.exports;
+		//
+		// Expose the module.
+		//
+		{
+		  module.exports = EventEmitter;
+		} 
+	} (eventemitter3));
+	return eventemitter3.exports;
+}
+
+var eventemitter3Exports = requireEventemitter3();
 var EventEmitter = /*@__PURE__*/getDefaultExportFromCjs(eventemitter3Exports);
 
 const {
@@ -15885,205 +15909,214 @@ const createColors = ({ useColor = isColorSupported } = {}) =>
 
 createColors();
 
-var rfdc_1 = rfdc;
+var rfdc_1;
+var hasRequiredRfdc;
 
-function copyBuffer (cur) {
-  if (cur instanceof Buffer) {
-    return Buffer.from(cur)
-  }
+function requireRfdc () {
+	if (hasRequiredRfdc) return rfdc_1;
+	hasRequiredRfdc = 1;
+	rfdc_1 = rfdc;
 
-  return new cur.constructor(cur.buffer.slice(), cur.byteOffset, cur.length)
+	function copyBuffer (cur) {
+	  if (cur instanceof Buffer) {
+	    return Buffer.from(cur)
+	  }
+
+	  return new cur.constructor(cur.buffer.slice(), cur.byteOffset, cur.length)
+	}
+
+	function rfdc (opts) {
+	  opts = opts || {};
+	  if (opts.circles) return rfdcCircles(opts)
+
+	  const constructorHandlers = new Map();
+	  constructorHandlers.set(Date, (o) => new Date(o));
+	  constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
+	  constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
+	  if (opts.constructorHandlers) {
+	    for (const handler of opts.constructorHandlers) {
+	      constructorHandlers.set(handler[0], handler[1]);
+	    }
+	  }
+
+	  let handler = null;
+
+	  return opts.proto ? cloneProto : clone
+
+	  function cloneArray (a, fn) {
+	    const keys = Object.keys(a);
+	    const a2 = new Array(keys.length);
+	    for (let i = 0; i < keys.length; i++) {
+	      const k = keys[i];
+	      const cur = a[k];
+	      if (typeof cur !== 'object' || cur === null) {
+	        a2[k] = cur;
+	      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+	        a2[k] = handler(cur, fn);
+	      } else if (ArrayBuffer.isView(cur)) {
+	        a2[k] = copyBuffer(cur);
+	      } else {
+	        a2[k] = fn(cur);
+	      }
+	    }
+	    return a2
+	  }
+
+	  function clone (o) {
+	    if (typeof o !== 'object' || o === null) return o
+	    if (Array.isArray(o)) return cloneArray(o, clone)
+	    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+	      return handler(o, clone)
+	    }
+	    const o2 = {};
+	    for (const k in o) {
+	      if (Object.hasOwnProperty.call(o, k) === false) continue
+	      const cur = o[k];
+	      if (typeof cur !== 'object' || cur === null) {
+	        o2[k] = cur;
+	      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+	        o2[k] = handler(cur, clone);
+	      } else if (ArrayBuffer.isView(cur)) {
+	        o2[k] = copyBuffer(cur);
+	      } else {
+	        o2[k] = clone(cur);
+	      }
+	    }
+	    return o2
+	  }
+
+	  function cloneProto (o) {
+	    if (typeof o !== 'object' || o === null) return o
+	    if (Array.isArray(o)) return cloneArray(o, cloneProto)
+	    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+	      return handler(o, cloneProto)
+	    }
+	    const o2 = {};
+	    for (const k in o) {
+	      const cur = o[k];
+	      if (typeof cur !== 'object' || cur === null) {
+	        o2[k] = cur;
+	      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+	        o2[k] = handler(cur, cloneProto);
+	      } else if (ArrayBuffer.isView(cur)) {
+	        o2[k] = copyBuffer(cur);
+	      } else {
+	        o2[k] = cloneProto(cur);
+	      }
+	    }
+	    return o2
+	  }
+	}
+
+	function rfdcCircles (opts) {
+	  const refs = [];
+	  const refsNew = [];
+
+	  const constructorHandlers = new Map();
+	  constructorHandlers.set(Date, (o) => new Date(o));
+	  constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
+	  constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
+	  if (opts.constructorHandlers) {
+	    for (const handler of opts.constructorHandlers) {
+	      constructorHandlers.set(handler[0], handler[1]);
+	    }
+	  }
+
+	  let handler = null;
+	  return opts.proto ? cloneProto : clone
+
+	  function cloneArray (a, fn) {
+	    const keys = Object.keys(a);
+	    const a2 = new Array(keys.length);
+	    for (let i = 0; i < keys.length; i++) {
+	      const k = keys[i];
+	      const cur = a[k];
+	      if (typeof cur !== 'object' || cur === null) {
+	        a2[k] = cur;
+	      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+	        a2[k] = handler(cur, fn);
+	      } else if (ArrayBuffer.isView(cur)) {
+	        a2[k] = copyBuffer(cur);
+	      } else {
+	        const index = refs.indexOf(cur);
+	        if (index !== -1) {
+	          a2[k] = refsNew[index];
+	        } else {
+	          a2[k] = fn(cur);
+	        }
+	      }
+	    }
+	    return a2
+	  }
+
+	  function clone (o) {
+	    if (typeof o !== 'object' || o === null) return o
+	    if (Array.isArray(o)) return cloneArray(o, clone)
+	    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+	      return handler(o, clone)
+	    }
+	    const o2 = {};
+	    refs.push(o);
+	    refsNew.push(o2);
+	    for (const k in o) {
+	      if (Object.hasOwnProperty.call(o, k) === false) continue
+	      const cur = o[k];
+	      if (typeof cur !== 'object' || cur === null) {
+	        o2[k] = cur;
+	      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+	        o2[k] = handler(cur, clone);
+	      } else if (ArrayBuffer.isView(cur)) {
+	        o2[k] = copyBuffer(cur);
+	      } else {
+	        const i = refs.indexOf(cur);
+	        if (i !== -1) {
+	          o2[k] = refsNew[i];
+	        } else {
+	          o2[k] = clone(cur);
+	        }
+	      }
+	    }
+	    refs.pop();
+	    refsNew.pop();
+	    return o2
+	  }
+
+	  function cloneProto (o) {
+	    if (typeof o !== 'object' || o === null) return o
+	    if (Array.isArray(o)) return cloneArray(o, cloneProto)
+	    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+	      return handler(o, cloneProto)
+	    }
+	    const o2 = {};
+	    refs.push(o);
+	    refsNew.push(o2);
+	    for (const k in o) {
+	      const cur = o[k];
+	      if (typeof cur !== 'object' || cur === null) {
+	        o2[k] = cur;
+	      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+	        o2[k] = handler(cur, cloneProto);
+	      } else if (ArrayBuffer.isView(cur)) {
+	        o2[k] = copyBuffer(cur);
+	      } else {
+	        const i = refs.indexOf(cur);
+	        if (i !== -1) {
+	          o2[k] = refsNew[i];
+	        } else {
+	          o2[k] = cloneProto(cur);
+	        }
+	      }
+	    }
+	    refs.pop();
+	    refsNew.pop();
+	    return o2
+	  }
+	}
+	return rfdc_1;
 }
 
-function rfdc (opts) {
-  opts = opts || {};
-  if (opts.circles) return rfdcCircles(opts)
-
-  const constructorHandlers = new Map();
-  constructorHandlers.set(Date, (o) => new Date(o));
-  constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
-  constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
-  if (opts.constructorHandlers) {
-    for (const handler of opts.constructorHandlers) {
-      constructorHandlers.set(handler[0], handler[1]);
-    }
-  }
-
-  let handler = null;
-
-  return opts.proto ? cloneProto : clone
-
-  function cloneArray (a, fn) {
-    const keys = Object.keys(a);
-    const a2 = new Array(keys.length);
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i];
-      const cur = a[k];
-      if (typeof cur !== 'object' || cur === null) {
-        a2[k] = cur;
-      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-        a2[k] = handler(cur, fn);
-      } else if (ArrayBuffer.isView(cur)) {
-        a2[k] = copyBuffer(cur);
-      } else {
-        a2[k] = fn(cur);
-      }
-    }
-    return a2
-  }
-
-  function clone (o) {
-    if (typeof o !== 'object' || o === null) return o
-    if (Array.isArray(o)) return cloneArray(o, clone)
-    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-      return handler(o, clone)
-    }
-    const o2 = {};
-    for (const k in o) {
-      if (Object.hasOwnProperty.call(o, k) === false) continue
-      const cur = o[k];
-      if (typeof cur !== 'object' || cur === null) {
-        o2[k] = cur;
-      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-        o2[k] = handler(cur, clone);
-      } else if (ArrayBuffer.isView(cur)) {
-        o2[k] = copyBuffer(cur);
-      } else {
-        o2[k] = clone(cur);
-      }
-    }
-    return o2
-  }
-
-  function cloneProto (o) {
-    if (typeof o !== 'object' || o === null) return o
-    if (Array.isArray(o)) return cloneArray(o, cloneProto)
-    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-      return handler(o, cloneProto)
-    }
-    const o2 = {};
-    for (const k in o) {
-      const cur = o[k];
-      if (typeof cur !== 'object' || cur === null) {
-        o2[k] = cur;
-      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-        o2[k] = handler(cur, cloneProto);
-      } else if (ArrayBuffer.isView(cur)) {
-        o2[k] = copyBuffer(cur);
-      } else {
-        o2[k] = cloneProto(cur);
-      }
-    }
-    return o2
-  }
-}
-
-function rfdcCircles (opts) {
-  const refs = [];
-  const refsNew = [];
-
-  const constructorHandlers = new Map();
-  constructorHandlers.set(Date, (o) => new Date(o));
-  constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
-  constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
-  if (opts.constructorHandlers) {
-    for (const handler of opts.constructorHandlers) {
-      constructorHandlers.set(handler[0], handler[1]);
-    }
-  }
-
-  let handler = null;
-  return opts.proto ? cloneProto : clone
-
-  function cloneArray (a, fn) {
-    const keys = Object.keys(a);
-    const a2 = new Array(keys.length);
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i];
-      const cur = a[k];
-      if (typeof cur !== 'object' || cur === null) {
-        a2[k] = cur;
-      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-        a2[k] = handler(cur, fn);
-      } else if (ArrayBuffer.isView(cur)) {
-        a2[k] = copyBuffer(cur);
-      } else {
-        const index = refs.indexOf(cur);
-        if (index !== -1) {
-          a2[k] = refsNew[index];
-        } else {
-          a2[k] = fn(cur);
-        }
-      }
-    }
-    return a2
-  }
-
-  function clone (o) {
-    if (typeof o !== 'object' || o === null) return o
-    if (Array.isArray(o)) return cloneArray(o, clone)
-    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-      return handler(o, clone)
-    }
-    const o2 = {};
-    refs.push(o);
-    refsNew.push(o2);
-    for (const k in o) {
-      if (Object.hasOwnProperty.call(o, k) === false) continue
-      const cur = o[k];
-      if (typeof cur !== 'object' || cur === null) {
-        o2[k] = cur;
-      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-        o2[k] = handler(cur, clone);
-      } else if (ArrayBuffer.isView(cur)) {
-        o2[k] = copyBuffer(cur);
-      } else {
-        const i = refs.indexOf(cur);
-        if (i !== -1) {
-          o2[k] = refsNew[i];
-        } else {
-          o2[k] = clone(cur);
-        }
-      }
-    }
-    refs.pop();
-    refsNew.pop();
-    return o2
-  }
-
-  function cloneProto (o) {
-    if (typeof o !== 'object' || o === null) return o
-    if (Array.isArray(o)) return cloneArray(o, cloneProto)
-    if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-      return handler(o, cloneProto)
-    }
-    const o2 = {};
-    refs.push(o);
-    refsNew.push(o2);
-    for (const k in o) {
-      const cur = o[k];
-      if (typeof cur !== 'object' || cur === null) {
-        o2[k] = cur;
-      } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-        o2[k] = handler(cur, cloneProto);
-      } else if (ArrayBuffer.isView(cur)) {
-        o2[k] = copyBuffer(cur);
-      } else {
-        const i = refs.indexOf(cur);
-        if (i !== -1) {
-          o2[k] = refsNew[i];
-        } else {
-          o2[k] = cloneProto(cur);
-        }
-      }
-    }
-    refs.pop();
-    refsNew.pop();
-    return o2
-  }
-}
-
-var rfdc$1 = /*@__PURE__*/getDefaultExportFromCjs(rfdc_1);
+var rfdcExports = requireRfdc();
+var rfdc = /*@__PURE__*/getDefaultExportFromCjs(rfdcExports);
 
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
@@ -17556,7 +17589,7 @@ function assertFunctionOrSelf(functionOrSelf, ...args) {
   }
 }
 __name(assertFunctionOrSelf, "assertFunctionOrSelf");
-var clone = rfdc$1({ circles: true });
+var clone = rfdc({ circles: true });
 function cloneObject(obj) {
   return clone(obj);
 }
