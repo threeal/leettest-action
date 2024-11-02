@@ -16175,7 +16175,7 @@ var EventManager = class {
 
 // src/utils/environment/is-observable.ts
 function isObservable(obj) {
-  return !!obj && typeof obj === "object" && typeof obj.lift === "function" && typeof obj.subscribe === "function";
+  return !!obj && typeof obj === "object" && typeof obj.subscribe === "function";
 }
 __name(isObservable, "isObservable");
 
