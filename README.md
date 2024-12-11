@@ -19,7 +19,7 @@ on:
 jobs:
   test-solutions:
     name: Test Solutions
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.0
