@@ -984,7 +984,7 @@ class AST {
             return [s, unescape(this.toString()), false, false];
         }
         // XXX abstract out this map method
-        let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot
+        let bodyDotAllowed = !repeated || allowDot || dot || false
             ? ''
             : this.#partsToRegExp(true);
         if (bodyDotAllowed === body) {
@@ -4695,7 +4695,7 @@ const IFLNK = 0b1010;
 const IFSOCK = 0b1100;
 const IFMT = 0b1111;
 // mask to unset low 4 bits
-const IFMT_UNKNOWN = ~IFMT;
+const IFMT_UNKNOWN = -16;
 // set after successfully calling readdir() and getting entries.
 const READDIR_CALLED = 0b0000_0001_0000;
 // set after a successful lstat()
@@ -5008,7 +5008,7 @@ class PathBase {
         }
         const children = Object.assign([], { provisional: 0 });
         this.#children.set(this, children);
-        this.#type &= ~READDIR_CALLED;
+        this.#type &= -17;
         return children;
     }
     /**
@@ -16417,7 +16417,7 @@ var ProcessOutputBuffer = class {
     this.buffer.push({
       time: Date.now(),
       stream: this.options?.stream,
-      entry: this.decoder.write(typeof data === "string" ? Buffer.from(data, typeof args[0] === "string" ? args[0] : void 0) : Buffer.from(data))
+      entry: this.decoder.write(typeof data === "string" ? Buffer.from(data, typeof args[0] === "string" ? args[0] : undefined) : Buffer.from(data))
     });
     if (this.options?.limit) {
       this.buffer = this.buffer.slice(-this.options.limit);
@@ -16565,7 +16565,7 @@ __name(createWritable, "createWritable");
     this.restoreState();
   }
   restoreState() {
-    this.task.prompt = void 0;
+    this.task.prompt = undefined;
     if (this.state) {
       this.task.state = this.state;
     }
