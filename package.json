@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "gha-utils": "^0.4.1",
-    "glob": "^11.0.0",
+    "glob": "^11.0.1",
     "leettest": "^0.2.0",
     "listr2": "^8.2.5"
   },
