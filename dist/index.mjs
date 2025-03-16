@@ -1,10 +1,10 @@
 import * as fs from 'node:fs';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { lstat, readdir as readdir$1, readlink, realpath } from 'node:fs/promises';
+import { realpath, readlink, readdir, lstat } from 'node:fs/promises';
 import os from 'node:os';
 import path$1, { win32, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { realpathSync as realpathSync$1, lstatSync, readdir, readdirSync, readlinkSync } from 'fs';
+import { realpathSync as realpathSync$1, readlinkSync, readdirSync, readdir as readdir$1, lstatSync } from 'fs';
 import { EventEmitter as EventEmitter$1 } from 'node:events';
 import Stream from 'node:stream';
 import { StringDecoder } from 'node:string_decoder';
@@ -4658,13 +4658,13 @@ class Minipass extends EventEmitter$1 {
 const realpathSync = realpathSync$1.native;
 const defaultFS = {
     lstatSync,
-    readdir: readdir,
+    readdir: readdir$1,
     readdirSync,
     readlinkSync,
     realpathSync,
     promises: {
         lstat,
-        readdir: readdir$1,
+        readdir,
         readlink,
         realpath,
     },
@@ -15907,7 +15907,49 @@ const createColors = ({ useColor = isColorSupported } = {}) =>
         {}
       );
 
-createColors();
+const {
+  reset,
+  bold,
+  dim,
+  italic,
+  underline,
+  inverse,
+  hidden,
+  strikethrough,
+  black,
+  red,
+  green,
+  yellow,
+  blue,
+  magenta,
+  cyan,
+  white,
+  gray,
+  bgBlack,
+  bgRed,
+  bgGreen,
+  bgYellow,
+  bgBlue,
+  bgMagenta,
+  bgCyan,
+  bgWhite,
+  blackBright,
+  redBright,
+  greenBright,
+  yellowBright,
+  blueBright,
+  magentaBright,
+  cyanBright,
+  whiteBright,
+  bgBlackBright,
+  bgRedBright,
+  bgGreenBright,
+  bgYellowBright,
+  bgBlueBright,
+  bgMagentaBright,
+  bgCyanBright,
+  bgWhiteBright,
+} = createColors();
 
 var rfdc_1;
 var hasRequiredRfdc;
@@ -16227,7 +16269,6 @@ var FIGURES_FALLBACK = {
   cross: "\xD7",
   tick: "\u221A",
   pointer: ">",
-  checkboxOn: "[\xD7]",
   squareSmallFilled: "\u25A0"
 };
 var figures = isUnicodeSupported() ? FIGURES_MAIN : FIGURES_FALLBACK;
@@ -16417,7 +16458,7 @@ var ProcessOutputBuffer = class {
     this.buffer.push({
       time: Date.now(),
       stream: this.options?.stream,
-      entry: this.decoder.write(typeof data === "string" ? Buffer.from(data, typeof args[0] === "string" ? args[0] : undefined) : Buffer.from(data))
+      entry: this.decoder.write(typeof data === "string" ? Buffer.from(data, typeof args[0] === "string" ? args[0] : void 0) : Buffer.from(data))
     });
     if (this.options?.limit) {
       this.buffer = this.buffer.slice(-this.options.limit);
@@ -16565,7 +16606,7 @@ __name(createWritable, "createWritable");
     this.restoreState();
   }
   restoreState() {
-    this.task.prompt = undefined;
+    this.task.prompt = void 0;
     if (this.state) {
       this.task.state = this.state;
     }
@@ -16734,7 +16775,7 @@ var DefaultRenderer = class _DefaultRenderer {
     rendererTaskOptions: /* @__PURE__ */ new Map()
   };
   async render() {
-    const { createLogUpdate } = await import('./index-CgWIFdJI.js');
+    const { createLogUpdate } = await import('./index-BUx9ud_I.js');
     const { default: truncate } = await import('./index-BzMk1wJi.js');
     const { default: wrap } = await import('./index-Dp0kadfZ.js');
     this.updater = createLogUpdate(this.logger.process.stdout);
