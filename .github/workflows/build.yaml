@@ -17,15 +17,18 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Setup Yarn
-        uses: threeal/setup-yarn-action@v2.0.0
+      - name: Setup pnpm
+        uses: threeal/setup-pnpm-action@v1.0.0
+
+      - name: Install Dependencies
+        run: pnpm install
 
       - name: Build Package
         uses: nick-fields/retry@v3.0.2
         with:
           timeout_minutes: 1
           max_attempts: 5
-          command: yarn build
+          command: pnpm build
 
       - name: Check Diff
         run: git diff && git diff-index --quiet --exit-code HEAD
