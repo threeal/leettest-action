@@ -16503,7 +16503,10 @@ var ListrLogger = class {
     if (!level) {
       return null;
     }
-    icon ||= this.options.icon?.[level];
+    if (!icon) {
+      const i = this.options.icon?.[level];
+      icon = typeof i === "function" ? i() : i;
+    }
     const coloring = this.options.color?.[level];
     if (icon && coloring) {
       icon = coloring(icon);
@@ -16999,7 +17002,7 @@ var DefaultRenderer = class _DefaultRenderer {
         });
         break;
       case "wrap":
-        parsed = this.wrap(message, columns, { hard: true }).split(EOL).map((s, i) => this.indent(s, i));
+        parsed = this.wrap(message, columns, { hard: true, trim: false }).split(EOL).map((s, i) => this.indent(s, i));
         break;
       default:
         throw new ListrRendererError("Format option for the renderer is wrong.");
@@ -17237,7 +17240,7 @@ var DefaultRenderer = class _DefaultRenderer {
     return this.format(data, this.style(task, true), level + 1);
   }
   indent(str, i) {
-    return i > 0 ? indent(str.trim(), this.options.indentation) : str.trim();
+    return i > 0 ? indent(str.trimEnd(), this.options.indentation) : str.trimEnd();
   }
 };
 
