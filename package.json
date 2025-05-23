@@ -2,11 +2,6 @@
   "name": "root",
   "private": true,
   "type": "module",
-  "scripts": {
-    "build": "rollup -c",
-    "format": "prettier --write --cache .",
-    "lint": "eslint"
-  },
   "dependencies": {
     "gha-utils": "^0.4.1",
     "glob": "^11.0.2",
