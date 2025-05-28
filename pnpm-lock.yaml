@@ -37,8 +37,8 @@ importers:
         specifier: ^12.1.2
         version: 12.1.2(rollup@4.41.0)(tslib@2.8.1)(typescript@5.8.3)
       '@tsconfig/node23':
-        specifier: ^23.0.1
-        version: 23.0.1
+        specifier: ^23.0.2
+        version: 23.0.2
       '@types/node':
         specifier: ^22.15.21
         version: 22.15.21
@@ -510,8 +510,8 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
-  '@tsconfig/node23@23.0.1':
-    resolution: {integrity: sha512-oJ0Y42TmsBLuLAfEbPTS5JXSbJJEEU4bULROS6zsL54Gdlw5aOy27rpsquotMKGf2auP6rkbfYsjl43WdGrNcg==}
+  '@tsconfig/node23@23.0.2':
+    resolution: {integrity: sha512-vOs+KHadhOfNs80TDwy9qXtwFgD5SJ37AkeSMsWmllZ96FaNcfB2S3bkmMHuG8jLjpezXCOO2+4KtNIFk2Xs+A==}
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
@@ -2000,7 +2000,7 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@tsconfig/node23@23.0.1': {}
+  '@tsconfig/node23@23.0.2': {}
 
   '@types/estree@1.0.7': {}
 
