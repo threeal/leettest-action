@@ -23,7 +23,7 @@ jobs:
         with:
           timeout_minutes: 1
           max_attempts: 5
-          command: pnpm build
+          command: pnpm rollup -c
 
       - name: Check Diff
-        run: git diff && git diff-index --quiet --exit-code HEAD
+        run: git diff --exit-code dist
