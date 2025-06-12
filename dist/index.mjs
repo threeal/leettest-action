@@ -984,7 +984,7 @@ class AST {
             return [s, unescape(this.toString()), false, false];
         }
         // XXX abstract out this map method
-        let bodyDotAllowed = !repeated || allowDot || dot || false
+        let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot
             ? ''
             : this.#partsToRegExp(true);
         if (bodyDotAllowed === body) {
@@ -4713,7 +4713,7 @@ const IFLNK = 0b1010;
 const IFSOCK = 0b1100;
 const IFMT = 0b1111;
 // mask to unset low 4 bits
-const IFMT_UNKNOWN = -16;
+const IFMT_UNKNOWN = ~IFMT;
 // set after successfully calling readdir() and getting entries.
 const READDIR_CALLED = 0b0000_0001_0000;
 // set after a successful lstat()
@@ -5026,7 +5026,7 @@ class PathBase {
         }
         const children = Object.assign([], { provisional: 0 });
         this.#children.set(this, children);
-        this.#type &= -17;
+        this.#type &= ~READDIR_CALLED;
         return children;
     }
     /**
