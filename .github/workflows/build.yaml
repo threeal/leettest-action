@@ -19,11 +19,7 @@ jobs:
         run: pnpm install
 
       - name: Build Package
-        uses: nick-fields/retry@v3.0.2
-        with:
-          timeout_minutes: 1
-          max_attempts: 5
-          command: pnpm rollup -c
-
-      - name: Check Diff
-        run: git diff --exit-code dist
+        run: |
+          rm -rf dist
+          pnpm rollup -c
+          git diff --exit-code dist

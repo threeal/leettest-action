@@ -25,7 +25,7 @@ pre-commit:
         - src/*.test.ts
 
     - name: build action
-      run: pnpm rollup -c
+      run: rm -rf dist && pnpm rollup -c
       glob:
         - dist/*
         - src/*.ts
