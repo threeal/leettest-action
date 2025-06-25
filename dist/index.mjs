@@ -18482,7 +18482,7 @@ try {
     });
     await task.run();
     if (task.errors.length > 0) {
-        throw new Error(`failed to test ${task.errors.length} solutions`);
+        throw new Error(`failed to test ${task.errors.length.toString()} solutions`);
     }
 }
 catch (err) {
