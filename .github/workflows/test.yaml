@@ -7,11 +7,7 @@ on:
 jobs:
   test-action:
     name: Test Action
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, macos-14, windows-2022]
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Solutions
         uses: actions/checkout@v4.2.2
@@ -32,11 +28,7 @@ jobs:
 
   test-action-failure:
     name: Test Action Failure
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, macos-14, windows-2022]
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Solutions
         uses: actions/checkout@v4.2.2
@@ -65,11 +57,7 @@ jobs:
 
   test-action-with-files-specified:
     name: Test Action With Files Specified
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, macos-14, windows-2022]
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Solutions
         uses: actions/checkout@v4.2.2
