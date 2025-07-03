@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "gha-utils": "^0.4.1",
-    "glob": "^11.0.2",
+    "glob": "^11.0.3",
     "leettest": "^0.2.0",
     "listr2": "^8.3.3"
   },
