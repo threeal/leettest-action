@@ -9,5 +9,5 @@ inputs:
     description: A list of pattern for solution files to process
     default: "**/solution.cpp"
 runs:
-  using: node20
+  using: node24
   main: dist/index.mjs
