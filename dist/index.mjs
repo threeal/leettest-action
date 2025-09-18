@@ -16867,9 +16867,9 @@ var DefaultRenderer = class _DefaultRenderer {
     rendererTaskOptions: /* @__PURE__ */ new Map()
   };
   async render() {
-    const { createLogUpdate } = await import('./index-Dur_hgd6.js');
-    const { default: truncate } = await import('./index-BvBa2ZFg.js');
-    const { default: wrap } = await import('./index-BTAkfmaU.js');
+    const { createLogUpdate } = await import('./index-DKzXF4Bx.js');
+    const { default: truncate } = await import('./index-DQaTec44.js');
+    const { default: wrap } = await import('./index-DGFl7j_K.js');
     this.updater = createLogUpdate(this.logger.process.stdout);
     this.truncate = truncate;
     this.wrap = wrap;
