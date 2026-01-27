@@ -6,7 +6,7 @@
     "gha-utils": "^0.4.1",
     "glob": "^13.0.0",
     "leettest": "^0.2.0",
-    "listr2": "^8.3.3"
+    "listr2": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
