@@ -17,7 +17,7 @@
     "@types/node": "^25.0.9",
     "eslint": "^9.39.2",
     "jiti": "^2.6.1",
-    "lefthook": "^2.0.13",
+    "lefthook": "^2.0.15",
     "prettier": "^3.8.0",
     "prettier-plugin-organize-imports": "^4.3.0",
     "rollup": "^4.55.1",
