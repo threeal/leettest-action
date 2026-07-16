@@ -15,7 +15,7 @@
     "@rollup/plugin-typescript": "^12.3.0",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^26.1.1",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "jiti": "^2.6.1",
     "lefthook": "^2.1.10",
     "prettier": "^3.8.1",
